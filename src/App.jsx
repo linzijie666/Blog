@@ -23,6 +23,8 @@ const email = "850207333@qq.com";
 const heroVideoUrl =
   "https://videos.pexels.com/video-files/3129957/3129957-uhd_2560_1440_25fps.mp4";
 
+const assetPath = (path) => `${import.meta.env.BASE_URL}${path.replace(/^\/+/, "")}`;
+
 const navItems = [
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
@@ -41,7 +43,7 @@ const projects = [
   {
     title: "电子蝴蝶：ESP-01S 物联网呼吸灯装置",
     type: "ESP-01S / MQTT / 微信小程序",
-    image: "/images/projects/electronic-butterfly.jpg",
+    image: assetPath("images/projects/electronic-butterfly.jpg"),
     description:
       "以蝴蝶造型 PCB 为载体的联网灯效作品，集成 24 颗蓝色 LED、Type-C 充电、锂电池供电、3.3V 稳压和 MQTT 远程控制。",
     tags: ["ESP8266 RTOS SDK", "PlatformIO", "MQTT", "PWM LED", "TP4056"],
@@ -67,7 +69,7 @@ const projects = [
   {
     title: "STM32G474 同步整流 Buck-Boost 数字电源",
     type: "STM32G474 / HRTIM / ADC DMA / 双环 PID",
-    image: "/images/projects/buck-boost-power.jpg",
+    image: assetPath("images/projects/buck-boost-power.jpg"),
     description:
       "基于 STM32G474RET6 的四开关同步整流 Buck-Boost 数字电源，使用 HRTIM 产生桥臂 PWM，ADC DMA 采样输入/输出电压电流，并实现电压-电流串级闭环控制。",
     tags: ["STM32G474", "Buck-Boost", "HRTIM", "ADC DMA", "PID"],
@@ -104,7 +106,7 @@ const projects = [
   {
     title: "小智 AI 设计工程",
     type: "OSHWHub / 小智 AI / 锂电池供电",
-    image: "/images/projects/xiaozhi-ai.jpg",
+    image: assetPath("images/projects/xiaozhi-ai.jpg"),
     description:
       "第十届立创电赛项目，小智 AI 训练营成果，将原设计供电方案改为锂电池，并加入 TP4056 充电管理，实现可充放电一体的 AI 语音硬件。",
     tags: ["小智 AI", "立创电赛", "TP4056", "锂电池", "音频硬件"],
@@ -255,7 +257,10 @@ function App() {
   const [selectedProject, setSelectedProject] = useState(null);
 
   return (
-    <div className="site-shell">
+    <div
+      className="site-shell"
+      style={{ "--hero-poster-image": `url("${assetPath("images/hero-poster.svg")}")` }}
+    >
       <header className="site-header">
         <a className="brand" href="#hero" aria-label="返回首页">
           <span className="brand-mark">LZJ</span>
@@ -282,7 +287,7 @@ function App() {
           <video
             className="hero-video"
             src={heroVideoUrl}
-            poster="/images/hero-poster.svg"
+            poster={assetPath("images/hero-poster.svg")}
             autoPlay
             muted
             loop
@@ -329,7 +334,7 @@ function App() {
         <section className="section-block" id="experience">
           <div className="wide-container experience-grid">
             <div className="profile-visual">
-              <img src="/images/profile.svg" alt="硬件工程师人物视觉" />
+              <img src={assetPath("images/profile.svg")} alt="硬件工程师人物视觉" />
               <div className="profile-badge">
                 <span>Available for</span>
                 <strong>Embedded Projects</strong>

@@ -240,7 +240,7 @@ a {
   position: absolute;
   inset: 0;
   opacity: 0.16;
-  background-image: url("/images/hero-poster.svg");
+  background-image: var(--hero-poster-image, url("/images/hero-poster.svg"));
   background-size: cover;
   animation: slow-pan 18s ease-in-out infinite alternate;
 }

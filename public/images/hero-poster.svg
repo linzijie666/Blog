@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080">
+  <defs>
+    <radialGradient id="g1" cx="72%" cy="32%" r="58%">
+      <stop offset="0" stop-color="#1a7186" stop-opacity=".72"/>
+      <stop offset=".45" stop-color="#0c2534" stop-opacity=".56"/>
+      <stop offset="1" stop-color="#05070c"/>
+    </radialGradient>
+    <linearGradient id="trace" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#5de1ff"/>
+      <stop offset="1" stop-color="#7cffc4"/>
+    </linearGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#g1)"/>
+  <g opacity=".24" stroke="#5de1ff" stroke-width="1">
+    <path d="M0 160h1920M0 320h1920M0 480h1920M0 640h1920M0 800h1920M0 960h1920"/>
+    <path d="M160 0v1080M320 0v1080M480 0v1080M640 0v1080M800 0v1080M960 0v1080M1120 0v1080M1280 0v1080M1440 0v1080M1600 0v1080M1760 0v1080"/>
+  </g>
+  <g fill="none" stroke="url(#trace)" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" opacity=".58">
+    <path d="M1180 170h300v120h180v210h-260v170h-370V520H835V350h345z"/>
+    <path d="M985 700H760V555H520V390H270"/>
+    <path d="M1360 720v130h-230v90H760"/>
+    <path d="M1460 350h170v-95h165"/>
+  </g>
+  <g fill="#7cffc4" opacity=".74">
+    <circle cx="1180" cy="170" r="11"/>
+    <circle cx="1480" cy="290" r="11"/>
+    <circle cx="1660" cy="500" r="11"/>
+    <circle cx="1030" cy="670" r="11"/>
+    <circle cx="520" cy="390" r="11"/>
+    <circle cx="760" cy="940" r="11"/>
+  </g>
+</svg>

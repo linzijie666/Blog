@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { motion, useAnimationFrame, useMotionValue, useTransform } from "motion/react";
+import { motion, useAnimationFrame, useMotionValue, useReducedMotion, useTransform } from "motion/react";
 import "./ShinyText.css";
 
 const ShinyText = ({
@@ -16,6 +16,7 @@ const ShinyText = ({
   delay = 0
 }) => {
   const [isPaused, setIsPaused] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const progress = useMotionValue(0);
   const elapsedRef = useRef(0);
   const lastTimeRef = useRef(null);
@@ -25,7 +26,7 @@ const ShinyText = ({
   const delayDuration = delay * 1000;
 
   useAnimationFrame((time) => {
-    if (disabled || isPaused) {
+    if (disabled || isPaused || prefersReducedMotion) {
       lastTimeRef.current = null;
       return;
     }
@@ -96,7 +97,10 @@ const ShinyText = ({
   return (
     <motion.span
       className={`shiny-text ${className}`}
-      style={{ ...gradientStyle, backgroundPosition }}
+      style={{
+        ...gradientStyle,
+        backgroundPosition: prefersReducedMotion ? "50% center" : backgroundPosition
+      }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >

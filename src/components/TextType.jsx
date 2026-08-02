@@ -2,6 +2,11 @@ import { createElement, useCallback, useEffect, useMemo, useRef, useState } from
 import { gsap } from "gsap";
 import "./TextType.css";
 
+const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
+
+const getPrefersReducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia(reducedMotionQuery).matches;
+
 const TextType = ({
   text,
   as: Component = "div",
@@ -28,10 +33,21 @@ const TextType = ({
   const [isDeleting, setIsDeleting] = useState(false);
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
   const [isVisible, setIsVisible] = useState(!startOnVisible);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(getPrefersReducedMotion);
   const cursorRef = useRef(null);
   const containerRef = useRef(null);
 
   const textArray = useMemo(() => (Array.isArray(text) ? text : [text]), [text]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(reducedMotionQuery);
+    const updateReducedMotion = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updateReducedMotion();
+    mediaQuery.addEventListener?.("change", updateReducedMotion);
+
+    return () => mediaQuery.removeEventListener?.("change", updateReducedMotion);
+  }, []);
 
   const getRandomSpeed = useCallback(() => {
     if (!variableSpeed) return typingSpeed;
@@ -64,7 +80,11 @@ const TextType = ({
 
   useEffect(() => {
     if (showCursor && cursorRef.current) {
-      gsap.set(cursorRef.current, { opacity: 1 });
+      gsap.killTweensOf(cursorRef.current);
+      gsap.set(cursorRef.current, { opacity: prefersReducedMotion ? 0 : 1 });
+
+      if (prefersReducedMotion) return undefined;
+
       gsap.to(cursorRef.current, {
         opacity: 0,
         duration: cursorBlinkDuration,
@@ -73,7 +93,9 @@ const TextType = ({
         ease: "power2.inOut"
       });
     }
-  }, [showCursor, cursorBlinkDuration]);
+
+    return undefined;
+  }, [showCursor, cursorBlinkDuration, prefersReducedMotion]);
 
   useEffect(() => {
     if (!isVisible) return undefined;
@@ -81,6 +103,13 @@ const TextType = ({
     let timeout;
     const currentText = textArray[currentTextIndex];
     const processedText = reverseMode ? currentText.split("").reverse().join("") : currentText;
+
+    if (prefersReducedMotion) {
+      setDisplayedText(processedText);
+      setCurrentCharIndex(processedText.length);
+      setIsDeleting(false);
+      return undefined;
+    }
 
     const executeTypingAnimation = () => {
       if (isDeleting) {
@@ -138,13 +167,15 @@ const TextType = ({
     initialDelay,
     isVisible,
     reverseMode,
+    prefersReducedMotion,
     variableSpeed,
     onSentenceComplete,
     getRandomSpeed
   ]);
 
   const shouldHideCursor =
-    hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
+    prefersReducedMotion ||
+    (hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting));
 
   return createElement(
     Component,

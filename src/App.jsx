@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import {
   Activity,
+  Award,
   ArrowDown,
   ArrowUpRight,
   Cpu,
   ExternalLink,
   Github,
+  GraduationCap,
   Mail,
   MapPin,
   MemoryStick,
@@ -33,10 +35,29 @@ const navItems = [
 ];
 
 const stats = [
-  { value: "18+", label: "硬件/固件项目" },
-  { value: "6", label: "量产与样机阶段" },
-  { value: "4yr", label: "嵌入式开发经验" },
-  { value: "24h", label: "问题闭环响应" }
+  { value: "14/141", label: "通信工程专业排名" },
+  { value: "95%", label: "100W 电源实测效率" },
+  { value: "<20mV", label: "A527 供电低纹波目标" },
+  { value: "3项", label: "2025 省/校级竞赛获奖" }
+];
+
+const resumeHighlights = [
+  {
+    label: "教育背景",
+    value: "广东海洋大学 · 通信工程",
+    detail: "本科在读 · 2023.09—至今 · 专业前 10%（14/141）"
+  },
+  {
+    label: "硬件实习",
+    value: "珠海全志科技 · 硬件实习生",
+    detail: "2026.01—2026.05 · A527/V881 平台电源与板级测试"
+  }
+];
+
+const honors = [
+  { date: "2025.04", title: "第十二届大唐杯信息技术通信比赛", result: "省级二等奖" },
+  { date: "2025.04", title: "第十六届蓝桥杯 EDA 设计比赛", result: "省级三等奖" },
+  { date: "2025.05", title: "电子设计大赛", result: "校级三等奖" }
 ];
 
 const projects = [
@@ -67,40 +88,38 @@ const projects = [
     }
   },
   {
-    title: "STM32G474 同步整流 Buck-Boost 数字电源",
-    type: "STM32G474 / HRTIM / ADC DMA / 双环 PID",
+    title: "100W 双向数字 DC-DC 变换器",
+    type: "STM32G474 / HRTIM / 4层板 / 双环控制",
     image: assetPath("images/projects/buck-boost-power.jpg"),
     description:
-      "基于 STM32G474RET6 的四开关同步整流 Buck-Boost 数字电源，使用 HRTIM 产生桥臂 PWM，ADC DMA 采样输入/输出电压电流，并实现电压-电流串级闭环控制。",
-    tags: ["STM32G474", "Buck-Boost", "HRTIM", "ADC DMA", "PID"],
+      "以 STM32G474 为主控完成 4 层板双向 Buck-Boost 变换器，从功率架构、驱动保护、四通道采样到双环控制独立完成全流程调试。",
+    tags: ["STM32G474", "200kHz HRTIM", "4层板", "NSI6602", "双环控制"],
     github: "https://github.com/linzijie666/4-queue.git",
     detail: {
       software:
-        "固件使用 STM32 HAL、CMake 与裸机状态机实现。HRTIM 负责 Buck/Boost 桥臂 PWM 与 ADC 硬件触发，ADC1 通过 DMA circular 搬运 4 路采样；电压外环降频运行生成电流指令，电流内环全速运行并写入 HRTIM 比较值。状态机负责软启动、运行、故障锁存和 PWM 封锁，上电会先等待 ADC DMA 首帧有效再进入软启动。",
+        "基于 STM32G474RET6 的高分辨率定时器输出 200kHz 互补对称 PWM，结合 STM32CubeMX/C 开发流程构建电压电流双环控制，并在调试阶段围绕采样、死区和保护策略迭代参数。",
       hardware:
-        "硬件为四开关同步整流 Buck-Boost 拓扑，主控 STM32G474RET6 运行 170MHz。功率级使用 4 颗 CJAC80SN10 N-MOSFET 与 2 颗 EG3112 半桥驱动，输入范围 12V-52.7V，电压/电流经 GS8558 零漂移运放调理后送入 ADC；板上还包含 USB PD 诱骗、电源树、CH340C 调试、OLED/面板接口、蜂鸣器和风扇控制预留。",
+        "采用 4 层板和 Buck/Boost 半桥功率架构，基于 40V 输入规格选用 60V、Rds(on)=1.8mΩ 的 CSD18540 MOS 管；使用 NSI6602 完成 12V 半桥驱动，设置 100ns 硬件死区，并通过栅极电阻与快恢复二极管抑制振铃和尖峰。",
       bom: [
-        "STM32G474RET6 主控",
-        "CJAC80SN10 100V/80A N-MOSFET x4",
-        "EG3112 半桥驱动 x2",
-        "22uH 功率电感、5mΩ 2512 电流采样电阻",
-        "GS8558-SR 零漂移运放、REF3033 3.3V 精密基准",
-        "TPS54360、SY8205、AMS1117 电源树",
-        "CH224K USB PD 诱骗、CH340C USB-UART、OLED/按键/编码器接口"
+        "STM32G474RET6 主控与 4 层 PCB",
+        "CSD18540 60V 低导通电阻 MOS 管",
+        "NSI6602 12V 半桥驱动芯片",
+        "RS8559XQ 运算放大器与四通道电压/电流采样",
+        "LL4148 快恢复二极管与 10Ω 栅极电阻",
+        "Buck/Boost 半桥功率电路与输入输出滤波"
       ],
-      cost: "样机估算约 ¥180-350/套，主要成本来自 STM32G474、功率 MOSFET、半桥驱动、电感、电源管理、采样运放、PCB 和接口器件。",
+      cost: "个人项目，围绕 100W 级双向变换器完成器件选型、4 层板设计、焊接调试与性能验证。",
       stack: [
         "C",
-        "STM32 HAL",
+        "STM32CubeMX",
         "STM32G474",
-        "HRTIM",
-        "ADC DMA",
-        "串级 PID",
-        "状态机",
-        "CMake"
+        "HRTIM 200kHz",
+        "4层 PCB",
+        "NSI6602",
+        "双环控制"
       ],
       result:
-        "完成 Buck/Boost 模式 PWM 输出框架、ADC 首帧保护、软启动、故障锁存、串口 CSV 诊断输出和电压-电流双环控制链路。当前目标输出为 24V，软启动 800ms，串口每 50ms 输出 Vin/Iin/Vout/Iout、设定值、控制量、效率、状态与故障码，便于上板调试和闭环参数迭代。"
+        "在 40V 输入、20V 额定输出条件下，实测最大输出电流 5A、电源效率 95%、电压调整率 0.8%、负载调整率 0.5%，输出纹波峰峰值低于 50mV。"
     }
   },
   {
@@ -137,33 +156,33 @@ const projects = [
 const capabilities = [
   {
     icon: Cpu,
-    title: "硬件 Bring-up",
-    description: "从原理图审阅、焊接检查到电源、时钟、复位、下载链路逐项验证。"
+    title: "原理图与 PCB",
+    description: "熟练使用 Cadence、Altium Designer、立创 EDA，独立完成原理图和 2-4 层板 PCB 设计。"
   },
   {
     icon: MemoryStick,
-    title: "固件架构",
-    description: "按驱动层、服务层、业务层拆分代码，降低外设变更带来的连锁影响。"
+    title: "电源拓扑与选型",
+    description: "熟悉 Buck、Boost、Buck-Boost、全桥等拓扑，能完成 MCU 外围、电容、电阻、电感和 MOS 管选型。"
   },
   {
     icon: Activity,
-    title: "信号调试",
-    description: "结合示波器、逻辑分析仪和串口日志定位时序、噪声与协议边界问题。"
+    title: "板级调试与测量",
+    description: "熟练使用示波器、逻辑分析仪、信号发生器、可调电源、电子负载和万用表完成验证。"
   },
   {
     icon: Radio,
-    title: "通信协议",
-    description: "熟悉 UART、I2C、SPI、CAN、RS485、MQTT、Modbus 等常用通信链路。"
+    title: "STM32 / C / C++",
+    description: "基于 STM32CubeMX 和 STM32 平台进行 C/C++ 开发，覆盖定时器、ADC、采样控制和外设联调。"
   },
   {
     icon: ShieldCheck,
-    title: "可靠性设计",
-    description: "关注看门狗、异常恢复、掉电保护、边界输入和现场可诊断性。"
+    title: "接口与通信",
+    description: "熟悉 SPI、I2C、UART、USB 等接口及通信协议硬件设计，能结合波形与时序定位问题。"
   },
   {
     icon: Zap,
-    title: "性能与功耗",
-    description: "围绕采样周期、PWM、DMA、睡眠模式和任务调度做资源与功耗平衡。"
+    title: "可靠性与测试",
+    description: "参与纹波、噪声、上电时序、过冲、HTOL、冷热冲击和高低温循环等板级测试与报告整理。"
   }
 ];
 
@@ -185,7 +204,7 @@ function ProjectDetail({ project, onClose }) {
 
   if (!project) return null;
 
-  const sourceUrl = project.source ?? project.github;
+  const sourceUrl = project.source;
   const sourceLabel = project.sourceLabel ?? "Source Link";
 
   return (
@@ -203,14 +222,18 @@ function ProjectDetail({ project, onClose }) {
           <p className="detail-summary">{project.description}</p>
 
           <div className="detail-action-row">
-            <a className="primary-button" href={project.github} target="_blank" rel="noreferrer">
-              <Github size={18} />
-              GitHub
-            </a>
-            <a className="ghost-button" href={sourceUrl} target="_blank" rel="noreferrer">
-              <ExternalLink size={18} />
-              {sourceLabel}
-            </a>
+            {project.github && (
+              <a className="primary-button" href={project.github} target="_blank" rel="noreferrer">
+                <Github size={18} />
+                GitHub
+              </a>
+            )}
+            {sourceUrl && (
+              <a className="ghost-button" href={sourceUrl} target="_blank" rel="noreferrer">
+                <ExternalLink size={18} />
+                {sourceLabel}
+              </a>
+            )}
           </div>
 
           <div className="detail-grid">
@@ -255,6 +278,19 @@ function ProjectDetail({ project, onClose }) {
 
 function App() {
   const [selectedProject, setSelectedProject] = useState(null);
+  const [heroVideoEnabled, setHeroVideoEnabled] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia(
+      "(min-width: 769px) and (prefers-reduced-motion: no-preference)"
+    );
+    const updateVideoAvailability = () => setHeroVideoEnabled(mediaQuery.matches);
+
+    updateVideoAvailability();
+    mediaQuery.addEventListener?.("change", updateVideoAvailability);
+
+    return () => mediaQuery.removeEventListener?.("change", updateVideoAvailability);
+  }, []);
 
   return (
     <div
@@ -284,19 +320,22 @@ function App() {
 
       <main>
         <section className="hero section-screen" id="hero">
-          <video
-            className="hero-video"
-            src={heroVideoUrl}
-            poster={assetPath("images/hero-poster.svg")}
-            autoPlay
-            muted
-            loop
-            playsInline
-            aria-hidden="true"
-          />
+          {heroVideoEnabled && (
+            <video
+              className="hero-video"
+              src={heroVideoUrl}
+              poster={assetPath("images/hero-poster.svg")}
+              preload="metadata"
+              autoPlay
+              muted
+              loop
+              playsInline
+              aria-hidden="true"
+            />
+          )}
           <div className="hero-noise" />
           <div className="hero-content wide-container">
-            <p className="eyebrow">Hardware Engineer / Embedded Engineer</p>
+            <p className="eyebrow">Hardware Engineer Candidate / Embedded Systems</p>
             <TextType
               as="h1"
               className="hero-title"
@@ -310,7 +349,7 @@ function App() {
               cursorClassName="hero-title-cursor"
             />
             <p className="hero-copy">
-              我专注硬件调试、嵌入式固件、传感器系统和物联网通信链路，把复杂问题拆成可以验证、可以复现、可以交付的工程结果。
+              通信工程本科生，专注电源硬件、板级调试和 STM32 嵌入式开发；从器件选型、PCB 设计到测试验证，关注每一个可以测量的工程结果。
             </p>
             <div className="hero-actions">
               <a className="primary-button" href="#projects">
@@ -324,10 +363,10 @@ function App() {
             </div>
           </div>
           <div className="hero-index wide-container" aria-label="当前工作方向">
-            <span>STM32G4</span>
-            <span>ESP8266</span>
-            <span>Power Control</span>
-            <span>Hardware Design</span>
+            <span>A527 Platform</span>
+            <span>STM32G474</span>
+            <span>Power Electronics</span>
+            <span>Board Test</span>
           </div>
         </section>
 
@@ -342,9 +381,9 @@ function App() {
             </div>
             <div className="experience-copy">
               <p className="eyebrow">Profile</p>
-              <h2>从硬件现象出发，写能在现场稳定运行的固件。</h2>
+              <h2>把电源、信号与固件串成可验证的硬件系统。</h2>
               <p>
-                我的工作方式偏工程闭环：先确认电源、时钟、接口和信号质量，再通过日志、仪器和最小复现代码定位问题。相比只把功能跑通，我更在意异常路径、诊断能力和长期维护。
+                我正在积累从原理图、功率器件与电源树，到板级调试、信号测试和嵌入式控制的完整经验。最近在全志科技参与 A527 平台 IC 封装验证评估板卡与 MR123/V881 芯片测试，完成多轨供电设计、纹波与时序验证，并参与可靠性测试。
               </p>
               <div className="contact-grid" aria-label="联系方式">
                 <a href={`mailto:${email}`}>
@@ -366,6 +405,15 @@ function App() {
                     <strong>{stat.value}</strong>
                     <span>{stat.label}</span>
                   </div>
+                ))}
+              </div>
+              <div className="resume-highlights" aria-label="简历重点经历">
+                {resumeHighlights.map((item) => (
+                  <article className="resume-highlight" key={item.label}>
+                    <p>{item.label}</p>
+                    <h3>{item.value}</h3>
+                    <span>{item.detail}</span>
+                  </article>
                 ))}
               </div>
             </div>
@@ -426,14 +474,21 @@ function App() {
                 <h2>个人优势</h2>
               </div>
               <p>
-                能力卡片先覆盖硬件、固件、调试、通信和可靠性这些核心方向，后续可以按你的真实经历继续收敛文案。
+                这些能力来自课程、竞赛、个人项目和硬件实习的交叉验证，重点覆盖电源设计、PCB 实现、仪器测量与板级可靠性测试。
               </p>
             </div>
             <div className="capability-grid">
-              {capabilities.map((item) => {
+              {capabilities.map((item, index) => {
                 const Icon = item.icon;
                 return (
-                  <article className="capability-card" key={item.title}>
+                  <article
+                    className={`capability-card ${
+                      index === 1
+                        ? "capability-card-primary"
+                        : `capability-card-supporting capability-card-supporting-${index}`
+                    }`}
+                    key={item.title}
+                  >
                     <div className="icon-box">
                       <Icon size={24} />
                     </div>
@@ -443,13 +498,36 @@ function App() {
                 );
               })}
             </div>
+            <div className="honors-block">
+              <div className="honors-heading">
+                <div>
+                  <p className="eyebrow">Competitions & Awards</p>
+                  <h3>用可测量的结果说明硬件能力。</h3>
+                </div>
+                <Award size={28} />
+              </div>
+              <div className="honor-grid">
+                {honors.map((honor) => (
+                  <article className="honor-card" key={honor.title}>
+                    <div className="honor-icon">
+                      <GraduationCap size={20} />
+                    </div>
+                    <div>
+                      <span>{honor.date}</span>
+                      <h4>{honor.title}</h4>
+                      <strong>{honor.result}</strong>
+                    </div>
+                  </article>
+                ))}
+              </div>
+            </div>
           </div>
         </section>
 
         <section className="contact-finale section-screen" id="contact">
           <div className="wide-container finale-inner">
             <p className="eyebrow">Contact</p>
-            <h2>如果你也在做硬件、固件或产品原型，我们可以聊聊。</h2>
+            <h2>正在寻找硬件工程师或板级测试方向的机会。</h2>
             <p>
               欢迎通过邮箱或 GitHub 联系我。这个页面会继续补充真实项目截图、测试数据、演示视频和更完整的制作说明。
             </p>

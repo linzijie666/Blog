@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { access } from "node:fs/promises";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
@@ -46,4 +47,32 @@ test("motion has a reduced-motion fallback across CSS and animated text", async 
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.match(textType, /prefers-reduced-motion/);
   assert.match(shinyText, /useReducedMotion/);
+});
+
+test("the 100W project exposes PDF-backed metrics and an evidence gallery", async () => {
+  const app = await readProjectFile("src/App.jsx");
+
+  assert.match(app, /2025\.10 - 2025\.12/);
+  assert.match(app, /84\.7%/);
+  assert.match(app, /92%/);
+  assert.match(app, /12mV/);
+  assert.match(app, /project-gallery/);
+  assert.match(app, /dc-dc-100w\/(board|efficiency)/);
+});
+
+test("all public project evidence assets exist", async () => {
+  const assetPaths = [
+    "public/images/projects/dc-dc-100w/board.jpg",
+    "public/images/projects/dc-dc-100w/efficiency.jpg",
+    "public/images/projects/dc-dc-100w/ringing.jpg",
+    "public/images/projects/dc-dc-100w/driver-waveform.jpg",
+    "public/images/projects/dc-dc-100w/sampling-schematic.jpg",
+    "public/images/projects/dc-dc-100w/pcb.jpg"
+  ];
+
+  await Promise.all(
+    assetPaths.map(async (assetPath) => {
+      await access(path.join(projectRoot, assetPath));
+    })
+  );
 });

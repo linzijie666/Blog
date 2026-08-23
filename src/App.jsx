@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   Activity,
   Award,
   ArrowDown,
-  ArrowUpRight,
   Cpu,
   ExternalLink,
   Github,
@@ -11,7 +10,6 @@ import {
   Mail,
   MapPin,
   MemoryStick,
-  MessageCircle,
   Radio,
   ShieldCheck,
   X,
@@ -19,6 +17,10 @@ import {
 } from "lucide-react";
 import TextType from "./components/TextType";
 import ShinyText from "./components/ShinyText";
+import KnowledgeArticle from "./knowledge/KnowledgeArticle.jsx";
+import KnowledgeSection from "./knowledge/KnowledgeSection.jsx";
+import { resolveKnowledgeRoute, scrollToHomeAnchor } from "./knowledge/route.js";
+import "./knowledge/knowledge.css";
 
 const email = "850207333@qq.com";
 
@@ -31,13 +33,13 @@ const navItems = [
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Capabilities", href: "#capabilities" },
-  { label: "Contact", href: "#contact" }
+  { label: "Knowledge", href: "#knowledge" }
 ];
 
 const stats = [
   { value: "14/141", label: "通信工程专业排名" },
-  { value: "95%", label: "100W 电源实测效率" },
-  { value: "<20mV", label: "A527 供电低纹波目标" },
+  { value: "92%", label: "100W Buck 降压效率" },
+  { value: "12mV", label: "100W 输出纹波峰峰值" },
   { value: "3项", label: "2025 省/校级竞赛获奖" }
 ];
 
@@ -45,12 +47,12 @@ const resumeHighlights = [
   {
     label: "教育背景",
     value: "广东海洋大学 · 通信工程",
-    detail: "本科在读 · 2023.09—至今 · 专业前 10%（14/141）"
+    detail: "本科在读，2023.09-至今，专业前 10%（14/141）"
   },
   {
     label: "硬件实习",
     value: "珠海全志科技 · 硬件实习生",
-    detail: "2026.01—2026.05 · A527/V881 平台电源与板级测试"
+    detail: "2026.01-2026.05，A527/V881 平台电源与板级测试"
   }
 ];
 
@@ -90,11 +92,51 @@ const projects = [
   {
     title: "100W 双向数字 DC-DC 变换器",
     type: "STM32G474 / HRTIM / 4层板 / 双环控制",
-    image: assetPath("images/projects/buck-boost-power.jpg"),
+    date: "2025.10 - 2025.12",
+    image: assetPath("images/projects/dc-dc-100w/efficiency.jpg"),
     description:
       "以 STM32G474 为主控完成 4 层板双向 Buck-Boost 变换器，从功率架构、驱动保护、四通道采样到双环控制独立完成全流程调试。",
-    tags: ["STM32G474", "200kHz HRTIM", "4层板", "NSI6602", "双环控制"],
+    tags: ["STM32G474", "40V 输入", "5A 输出", "92% Buck", "12mV 纹波"],
     github: "https://github.com/linzijie666/4-queue.git",
+    metrics: [
+      { value: "40V", label: "输入规格" },
+      { value: "5A", label: "最大输出" },
+      { value: "92%", label: "Buck 降压效率" },
+      { value: "84.7%", label: "Boost 升压效率" },
+      { value: "12mV", label: "纹波峰峰值" }
+    ],
+    gallery: [
+      {
+        src: assetPath("images/projects/dc-dc-100w/board.jpg"),
+        label: "实物板",
+        alt: "100W 双向 DC-DC 变换器实物板"
+      },
+      {
+        src: assetPath("images/projects/dc-dc-100w/efficiency.jpg"),
+        label: "带载效率测试",
+        alt: "100W 双向 DC-DC 变换器带载效率测试"
+      },
+      {
+        src: assetPath("images/projects/dc-dc-100w/ringing.jpg"),
+        label: "振铃问题定位",
+        alt: "示波器显示的功率级振铃波形"
+      },
+      {
+        src: assetPath("images/projects/dc-dc-100w/driver-waveform.jpg"),
+        label: "驱动板波形",
+        alt: "半桥驱动板互补 PWM 波形"
+      },
+      {
+        src: assetPath("images/projects/dc-dc-100w/sampling-schematic.jpg"),
+        label: "采样电路",
+        alt: "四通道电压电流采样原理图"
+      },
+      {
+        src: assetPath("images/projects/dc-dc-100w/pcb.jpg"),
+        label: "主控 PCB",
+        alt: "STM32G474 主控 PCB 布局"
+      }
+    ],
     detail: {
       software:
         "基于 STM32G474RET6 的高分辨率定时器输出 200kHz 互补对称 PWM，结合 STM32CubeMX/C 开发流程构建电压电流双环控制，并在调试阶段围绕采样、死区和保护策略迭代参数。",
@@ -119,7 +161,7 @@ const projects = [
         "双环控制"
       ],
       result:
-        "在 40V 输入、20V 额定输出条件下，实测最大输出电流 5A、电源效率 95%、电压调整率 0.8%、负载调整率 0.5%，输出纹波峰峰值低于 50mV。"
+        "在 40V 输入、20V 额定输出条件下，实测最大输出电流 5A。带载测试中 Buck 降压效率约 92%，Boost 升压效率 84.7%，输出纹波峰峰值 12mV；电压调整率 0.8%，负载调整率 0.5%。"
     }
   },
   {
@@ -213,7 +255,10 @@ function ProjectDetail({ project, onClose }) {
       <article className="detail-panel">
         <div className="detail-body">
           <div className="detail-topline">
-            <p className="eyebrow">{project.type}</p>
+            <div>
+              <p className="eyebrow">{project.type}</p>
+              {project.date && <span className="detail-date">{project.date}</span>}
+            </div>
             <button className="detail-close" type="button" aria-label="关闭项目详情" onClick={onClose}>
               <X size={20} />
             </button>
@@ -235,6 +280,37 @@ function ProjectDetail({ project, onClose }) {
               </a>
             )}
           </div>
+
+          {project.metrics && (
+            <div className="project-metrics" aria-label="关键测试结果">
+              {project.metrics.map((metric) => (
+                <div className="project-metric" key={metric.label}>
+                  <strong>{metric.value}</strong>
+                  <span>{metric.label}</span>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {project.gallery && (
+            <section className="project-gallery" aria-labelledby="project-gallery-title">
+              <div className="project-gallery-heading">
+                <div>
+                  <h3 id="project-gallery-title">工程证据</h3>
+                  <p>从实物、效率测试到波形和原理图，展示可以复核的调试过程。</p>
+                </div>
+                <span>{project.gallery.length} 张图</span>
+              </div>
+              <div className="project-gallery-grid">
+                {project.gallery.map((image) => (
+                  <figure className="project-gallery-item" key={image.src}>
+                    <img src={image.src} alt={image.alt} loading="lazy" />
+                    <figcaption>{image.label}</figcaption>
+                  </figure>
+                ))}
+              </div>
+            </section>
+          )}
 
           <div className="detail-grid">
             <section className="detail-section">
@@ -279,6 +355,7 @@ function ProjectDetail({ project, onClose }) {
 function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [heroVideoEnabled, setHeroVideoEnabled] = useState(false);
+  const [locationHash, setLocationHash] = useState(() => window.location.hash);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(
@@ -291,6 +368,22 @@ function App() {
 
     return () => mediaQuery.removeEventListener?.("change", updateVideoAvailability);
   }, []);
+
+  useEffect(() => {
+    const updateHash = () => setLocationHash(window.location.hash);
+
+    window.addEventListener("hashchange", updateHash);
+    return () => window.removeEventListener("hashchange", updateHash);
+  }, []);
+
+  useLayoutEffect(() => {
+    scrollToHomeAnchor(locationHash);
+  }, [locationHash]);
+
+  const knowledgeRoute = resolveKnowledgeRoute(locationHash);
+  if (knowledgeRoute === "capacitor-inductor") {
+    return <KnowledgeArticle email={email} />;
+  }
 
   return (
     <div
@@ -451,6 +544,7 @@ function App() {
                   <img src={project.image} alt={`${project.title} 图片`} />
                   <div className="project-content">
                     <p>{project.type}</p>
+                    {project.date && <small className="project-date">{project.date}</small>}
                     <h3>{project.title}</h3>
                     <span>{project.description}</span>
                     <div className="tag-row">
@@ -524,33 +618,11 @@ function App() {
           </div>
         </section>
 
-        <section className="contact-finale section-screen" id="contact">
-          <div className="wide-container finale-inner">
-            <p className="eyebrow">Contact</p>
-            <h2>正在寻找硬件工程师或板级测试方向的机会。</h2>
-            <p>
-              欢迎通过邮箱或 GitHub 联系我。这个页面会继续补充真实项目截图、测试数据、演示视频和更完整的制作说明。
-            </p>
-            <div className="finale-actions">
-              <a className="primary-button" href={`mailto:${email}`}>
-                <Mail size={18} />
-                Send Email
-              </a>
-              <a className="ghost-button" href="https://github.com/linzijie666" target="_blank" rel="noreferrer">
-                <Github size={18} />
-                GitHub
-              </a>
-              <a className="ghost-button" href="#hero">
-                <MessageCircle size={18} />
-                Back to Top
-              </a>
-            </div>
-          </div>
-        </section>
+        <KnowledgeSection />
       </main>
 
-      <a className="floating-link" href="#contact" aria-label="联系我">
-        <ArrowUpRight size={20} />
+      <a className="floating-link" href={`mailto:${email}`} aria-label="发送邮件联系我">
+        <Mail size={20} />
       </a>
 
       {selectedProject && <ProjectDetail project={selectedProject} onClose={() => setSelectedProject(null)} />}

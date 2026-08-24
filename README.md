@@ -1,12 +1,13 @@
 # LzjEngineer Embedded Blog
 
-这是一个面向硬件工程师 / 嵌入式工程师的个人作品集网站，使用 React + Vite 构建。整体风格是暗色、克制、偏工程作品集，用来展示硬件项目、嵌入式固件、调试记录和联系方式。
+这是一个面向硬件工程师 / 嵌入式工程师的个人作品集网站，使用 React + Vite 构建。网站以暗色工程视觉展示硬件项目、嵌入式固件、板级调试记录和电路知识笔记。
 
-当前版本重点展示真实项目：
+当前版本包含：
 
 - 电子蝴蝶：ESP-01S 物联网呼吸灯装置
-- STM32G474 同步整流 Buck-Boost 数字电源
-- 小智 AI 设计工程
+- 100W 双向数字 DC-DC 变换器：STM32G474、HRTIM 和双环控制
+- 小智 AI 设计工程：锂电池供电与 TP4056 充电管理
+- 知识专栏首篇文章：电容“隔直通交”与电感“通直隔交”的原理
 
 ## 技术栈
 
@@ -21,18 +22,37 @@
 
 - 全屏首页 Hero：视频背景、打字开屏文本、导航栏和联系按钮。
 - 个人经历模块：人物视觉、个人介绍、联系方式、项目数据。
-- 精选项目模块：单列大卡片展示项目封面，点击后打开详情面板。
+- 精选项目模块：单列大卡片展示项目封面，点击后打开详情面板；100W DC-DC 项目包含实物、波形、效率和 PCB 证据图库。
 - 项目详情面板：包含软件方案、硬件方案、物料选型、成本、技术栈、实际效果、GitHub / 项目链接。
 - 个人优势模块：展示硬件 bring-up、固件架构、信号调试、通信协议、可靠性设计等能力。
-- 底部联系模块：整屏收尾页，突出邮箱和 GitHub。
+- 知识专栏模块：首页底部展示文章卡片，点击进入独立文章页。
+- 独立知识文章页：使用轻量 Hash 路由 `#/knowledge/capacitor-inductor`，支持目录跳转、返回首页和邮件联系。
+
+## 项目结构
+
+```text
+src/
++-- App.jsx                        首页、项目数据和 Hash 路由入口
++-- styles.css                     首页全局样式
++-- components/                    动效文字组件
+`-- knowledge/
+    |-- KnowledgeSection.jsx       首页知识专栏卡片
+    |-- KnowledgeArticle.jsx       电容 / 电感文章页
+    |-- knowledge.css              知识专栏和文章页样式
+    `-- route.js                   Hash 路由与滚动辅助函数
+public/images/                     Hero、头像和项目图片
+tests/                             Node 内置测试
+```
 
 ## 本地开发
 
-进入项目目录：
+进入项目目录（将路径替换为本地项目目录）：
 
 ```bash
-cd C:\Users\ASUS\Desktop\博客
+cd <project-directory>
 ```
+
+需要 Node.js 18 或更高版本，建议使用 Node.js 20+。
 
 安装依赖：
 
@@ -64,9 +84,17 @@ npm run build
 npm run preview
 ```
 
+运行自动化测试：
+
+```bash
+node --test tests/*.test.mjs
+```
+
+测试覆盖首页布局契约、响应式与 reduced-motion 规则、项目证据资源，以及知识文章内容和 Hash 路由。
+
 ## 内容维护
 
-主要内容在 `src/App.jsx` 中维护。
+首页项目、导航和联系方式主要在 `src/App.jsx` 中维护；知识专栏内容见下方“修改知识专栏文章”。
 
 ### 修改开屏文本
 
@@ -142,6 +170,22 @@ const heroVideoUrl =
 ```
 
 替换成你自己的公开视频地址。如果想使用本地视频，可以把视频放到 `public/videos/`，再用 `assetPath("videos/xxx.mp4")` 引用。
+
+### 修改知识专栏文章
+
+首页文章卡片位于：
+
+```text
+src/knowledge/KnowledgeSection.jsx
+```
+
+文章正文、目录和页面标题位于：
+
+```text
+src/knowledge/KnowledgeArticle.jsx
+```
+
+当前文章使用固定地址 `#/knowledge/capacitor-inductor`。如需新增文章，需要在 `src/knowledge/route.js` 增加路由解析，并在 `src/App.jsx` 中接入对应视图。
 
 ## 部署上线方案
 
@@ -343,6 +387,8 @@ git push
 部署前建议先本地执行：
 
 ```bash
+npm install
+node --test tests/*.test.mjs
 npm run build
 npm run preview
 ```
@@ -350,9 +396,11 @@ npm run preview
 然后检查：
 
 - 首页 Hero 是否正常显示视频背景和欢迎文本。
-- 导航锚点是否能跳转到 Experience / Projects / Capabilities / Contact。
+- 导航锚点是否能跳转到 Experience / Projects / Capabilities / Knowledge。
 - 三个项目卡片是否正常显示封面。
 - 点击项目卡片后详情面板是否能打开和关闭。
+- 知识专栏卡片是否能进入 `#/knowledge/capacitor-inductor`。
+- 文章目录是否能跳转，返回知识专栏后页面位置是否正确。
 - 邮箱链接是否打开邮件客户端。
 - GitHub / OSHWHub 链接是否能打开。
 - 页面刷新后没有空白页。
@@ -382,6 +430,13 @@ npm run build
 
 ```text
 dist
+```
+
+如果本地执行 `npm run build` 时提示找不到 `vite`，先确认依赖已安装并且 `node_modules` 目录存在：
+
+```bash
+npm install
+npm run build
 ```
 
 ### 修改后线上没有变化

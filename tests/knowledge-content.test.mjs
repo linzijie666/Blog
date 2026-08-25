@@ -16,6 +16,36 @@ test("the article teaches the time-domain and frequency-domain models", async ()
   assert.match(article, /自谐振频率/);
 });
 
+test("the diode article covers the PN junction and interview essentials", async () => {
+  const article = await read("src/knowledge/DiodeArticle.jsx");
+
+  assert.match(article, /PN 结如何形成/);
+  assert.match(article, /I_D.*I_S.*exp.*V_D.*nV_T/s);
+  assert.match(article, /V_T.*25\.9 mV/s);
+  assert.match(article, /势垒电容/);
+  assert.match(article, /扩散电容/);
+  assert.match(article, /齐纳击穿/);
+  assert.match(article, /桥式全波整流/);
+  assert.match(article, /限幅/);
+  assert.match(article, /稳压/);
+  assert.match(article, /t_rr/);
+  assert.match(article, /Q_rr/);
+  assert.match(article, /Shockley/);
+  assert.match(article, /DIODE_ARTICLE_HASH/);
+});
+
+test("the diode article preserves article accessibility hooks", async () => {
+  const article = await read("src/knowledge/DiodeArticle.jsx");
+
+  assert.match(article, /href="\.\/\#knowledge"/);
+  assert.match(article, /mailto:\$\{email\}/);
+  assert.match(article, /aria-label="文章目录"/);
+  assert.match(article, /useLayoutEffect/);
+  assert.match(article, /resetArticleScroll/);
+  assert.match(article, /ref=\{mainRef\}/);
+  assert.match(article, /tabIndex="-1"/);
+});
+
 test("the article exposes clear return and contact paths", async () => {
   const article = await read("src/knowledge/KnowledgeArticle.jsx");
 
@@ -70,6 +100,8 @@ test("the homepage replaces the contact finale with the knowledge column", async
   assert.match(section, /tabIndex="-1"/);
   assert.match(section, /ARTICLE_HASH/);
   assert.match(section, /阅读全文/);
+  assert.match(section, /DIODE_ARTICLE_HASH/);
+  assert.match(section, /二极管：从 PN 结到整流、限幅与稳压/);
 });
 
 test("the floating shortcut remains an email contact path", async () => {
@@ -84,6 +116,7 @@ test("knowledge layouts are responsive and motion-safe", async () => {
 
   assert.match(css, /\.knowledge-finale/);
   assert.match(css, /\.knowledge-card/);
+  assert.match(css, /\.knowledge-card-grid/);
   assert.match(css, /\.knowledge-article/);
   assert.match(css, /\.formula-block/);
   assert.match(css, /@media\s*\(max-width:\s*768px\)/);

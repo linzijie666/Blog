@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   ARTICLE_HASH,
+  DIODE_ARTICLE_HASH,
   resetArticleScroll,
   resolveKnowledgeRoute,
   scrollToHomeAnchor,
@@ -11,6 +12,11 @@ import {
 test("the capacitor and inductor article has a stable hash route", () => {
   assert.equal(ARTICLE_HASH, "#/knowledge/capacitor-inductor");
   assert.equal(resolveKnowledgeRoute(ARTICLE_HASH), "capacitor-inductor");
+});
+
+test("the diode article has a stable hash route", () => {
+  assert.equal(DIODE_ARTICLE_HASH, "#/knowledge/diode");
+  assert.equal(resolveKnowledgeRoute(DIODE_ARTICLE_HASH), "diode");
 });
 
 test("home anchors and unknown hashes safely resolve to the homepage", () => {

@@ -7,7 +7,7 @@
 - 电子蝴蝶：ESP-01S 物联网呼吸灯装置
 - 100W 双向数字 DC-DC 变换器：STM32G474、HRTIM 和双环控制
 - 小智 AI 设计工程：锂电池供电与 TP4056 充电管理
-- 知识专栏首篇文章：电容“隔直通交”与电感“通直隔交”的原理
+- 知识专栏文章：电容/电感交直流原理，以及二极管秋招速复
 
 ## 技术栈
 
@@ -38,6 +38,7 @@ src/
 `-- knowledge/
     |-- KnowledgeSection.jsx       首页知识专栏卡片
     |-- KnowledgeArticle.jsx       电容 / 电感文章页
+    |-- DiodeArticle.jsx           二极管秋招速复文章页
     |-- knowledge.css              知识专栏和文章页样式
     `-- route.js                   Hash 路由与滚动辅助函数
 public/images/                     Hero、头像和项目图片
@@ -185,7 +186,7 @@ src/knowledge/KnowledgeSection.jsx
 src/knowledge/KnowledgeArticle.jsx
 ```
 
-当前文章使用固定地址 `#/knowledge/capacitor-inductor`。如需新增文章，需要在 `src/knowledge/route.js` 增加路由解析，并在 `src/App.jsx` 中接入对应视图。
+当前文章使用固定地址 `#/knowledge/capacitor-inductor`，二极管文章地址为 `#/knowledge/diode`。如需新增文章，需要在 `src/knowledge/route.js` 增加路由解析，并在 `src/App.jsx` 中接入对应视图。
 
 ## 部署上线方案
 

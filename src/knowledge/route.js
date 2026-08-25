@@ -1,7 +1,10 @@
 export const ARTICLE_HASH = "#/knowledge/capacitor-inductor";
+export const DIODE_ARTICLE_HASH = "#/knowledge/diode";
 
 export function resolveKnowledgeRoute(hash) {
-  return hash === ARTICLE_HASH ? "capacitor-inductor" : null;
+  if (hash === ARTICLE_HASH) return "capacitor-inductor";
+  if (hash === DIODE_ARTICLE_HASH) return "diode";
+  return null;
 }
 
 export function resetArticleScroll(viewport = window) {

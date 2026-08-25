@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   ARTICLE_HASH,
+  ARTICLE_HASHES,
   resetArticleScroll,
   resolveKnowledgeRoute,
   scrollToHomeAnchor,
@@ -11,6 +12,20 @@ import {
 test("the capacitor and inductor article has a stable hash route", () => {
   assert.equal(ARTICLE_HASH, "#/knowledge/capacitor-inductor");
   assert.equal(resolveKnowledgeRoute(ARTICLE_HASH), "capacitor-inductor");
+});
+
+test("the passive component review articles have stable hash routes", () => {
+  assert.deepEqual(ARTICLE_HASHES, {
+    resistor: "#/knowledge/resistor",
+    capacitor: "#/knowledge/capacitor",
+    inductor: "#/knowledge/inductor",
+    "ferrite-bead": "#/knowledge/ferrite-bead",
+    "capacitor-inductor": "#/knowledge/capacitor-inductor"
+  });
+
+  for (const [slug, hash] of Object.entries(ARTICLE_HASHES)) {
+    assert.equal(resolveKnowledgeRoute(hash), slug);
+  }
 });
 
 test("home anchors and unknown hashes safely resolve to the homepage", () => {

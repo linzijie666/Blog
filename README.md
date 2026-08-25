@@ -1,62 +1,59 @@
 # LzjEngineer Embedded Blog
 
-这是一个面向硬件工程师 / 嵌入式工程师的个人作品集网站，使用 React + Vite 构建。网站以暗色工程视觉展示硬件项目、嵌入式固件、板级调试记录和电路知识笔记。
+面向硬件与嵌入式工程方向的个人作品集网站，使用 React + Vite 构建。网站以暗色、克制、偏工程化的视觉风格，展示电源硬件、板级调试、STM32 固件开发、竞赛经历与技术笔记。
 
-当前版本包含：
+## 功能概览
+
+- **Hero 首页**：桌面端在用户未开启“减少动态效果”时播放视频背景，同时提供本地海报图作为降级方案。
+- **个人经历**：展示教育背景、硬件实习、联系方式、项目数据与竞赛获奖情况。
+- **精选项目**：展示 3 个硬件项目，点击卡片可打开项目详情面板。
+- **工程证据**：100W 双向 DC-DC 项目包含实物、效率、振铃、驱动波形、采样原理图和 PCB 等图片。
+- **能力与奖项**：覆盖 PCB、电源拓扑、仪器测量、STM32、通信接口和可靠性测试等方向。
+- **Knowledge 专栏**：按电阻、电容、电感、磁珠四类提供硬件面试复习文章，并保留电容 / 电感原理旧文作为延伸阅读。
+- **独立文章路由**：使用轻量 Hash 路由，不依赖 React Router；文章支持目录、上一篇 / 下一篇和 PDF 课件下载。
+
+## 当前展示内容
 
 - 电子蝴蝶：ESP-01S 物联网呼吸灯装置
-- 100W 双向数字 DC-DC 变换器：STM32G474、HRTIM 和双环控制
+- 100W 双向数字 DC-DC 变换器：STM32G474 / HRTIM / 4 层板 / 双环控制
 - 小智 AI 设计工程：锂电池供电与 TP4056 充电管理
-- 知识专栏首篇文章：电容“隔直通交”与电感“通直隔交”的原理
+- 无源器件面试复习：电阻选型、电容与 PDN、功率电感、磁珠与 EMI
+- 电路基础延伸阅读：电容与电感的时域关系、频域阻抗、通信电路应用和真实器件边界
 
 ## 技术栈
 
 - React 19
 - Vite 6
-- Motion
+- `motion`
 - GSAP
-- Lucide React
+- `lucide-react`
 - 原生 CSS
-
-## 页面结构
-
-- 全屏首页 Hero：视频背景、打字开屏文本、导航栏和联系按钮。
-- 个人经历模块：人物视觉、个人介绍、联系方式、项目数据。
-- 精选项目模块：单列大卡片展示项目封面，点击后打开详情面板；100W DC-DC 项目包含实物、波形、效率和 PCB 证据图库。
-- 项目详情面板：包含软件方案、硬件方案、物料选型、成本、技术栈、实际效果、GitHub / 项目链接。
-- 个人优势模块：展示硬件 bring-up、固件架构、信号调试、通信协议、可靠性设计等能力。
-- 知识专栏模块：首页底部展示文章卡片，点击进入独立文章页。
-- 独立知识文章页：使用轻量 Hash 路由 `#/knowledge/capacitor-inductor`，支持目录跳转、返回首页和邮件联系。
 
 ## 项目结构
 
 ```text
-src/
-+-- App.jsx                        首页、项目数据和 Hash 路由入口
-+-- styles.css                     首页全局样式
-+-- components/                    动效文字组件
-`-- knowledge/
-    |-- KnowledgeSection.jsx       首页知识专栏卡片
-    |-- KnowledgeArticle.jsx       电容 / 电感文章页
-    |-- knowledge.css              知识专栏和文章页样式
-    `-- route.js                   Hash 路由与滚动辅助函数
-public/images/                     Hero、头像和项目图片
-tests/                             Node 内置测试
+.
+├── public/
+│   ├── downloads/              # 可公开下载的复习课件 PDF
+│   └── images/                 # Hero、项目图片和知识文章配图
+├── src/
+│   ├── components/             # 通用动效文本组件
+│   ├── knowledge/              # 知识专栏、文章页和 Hash 路由
+│   ├── App.jsx                 # 首页、项目数据和整体页面装配
+│   ├── main.jsx                # React 入口
+│   └── styles.css              # 首页全局样式
+├── tests/                      # Node 原生测试
+├── vite.config.js              # Vite 配置和部署路径配置
+├── index.html
+└── package.json
 ```
 
 ## 本地开发
 
-进入项目目录（将路径替换为本地项目目录）：
+进入项目目录并安装依赖：
 
 ```bash
-cd <project-directory>
-```
-
-需要 Node.js 18 或更高版本，建议使用 Node.js 20+。
-
-安装依赖：
-
-```bash
+cd C:\Users\ASUS\Desktop\博客
 npm install
 ```
 
@@ -66,13 +63,13 @@ npm install
 npm run dev
 ```
 
-默认访问：
+默认访问地址：
 
 ```text
 http://127.0.0.1:5173/
 ```
 
-生产构建：
+执行生产构建：
 
 ```bash
 npm run build
@@ -84,364 +81,171 @@ npm run build
 npm run preview
 ```
 
-运行自动化测试：
+运行项目测试：
 
 ```bash
-node --test tests/*.test.mjs
+node --test
 ```
-
-测试覆盖首页布局契约、响应式与 reduced-motion 规则、项目证据资源，以及知识文章内容和 Hash 路由。
 
 ## 内容维护
 
-首页项目、导航和联系方式主要在 `src/App.jsx` 中维护；知识专栏内容见下方“修改知识专栏文章”。
+### 修改首页文案、经历和联系方式
 
-### 修改开屏文本
+首页主要内容集中在 `src/App.jsx`：
 
-搜索：
+- `email`：邮箱地址。
+- `heroVideoUrl`：Hero 视频地址。
+- `navItems`：顶部导航及对应锚点。
+- `stats`：首页数据卡片。
+- `resumeHighlights`：教育背景和实习经历。
+- `honors`：竞赛与获奖信息。
+- `capabilities`：个人能力卡片。
 
-```jsx
-text="欢迎来到LzjEngineer的Blog！很高兴见到你!"
-```
-
-改成你想展示的欢迎语即可。
-
-### 修改邮箱
-
-搜索：
-
-```jsx
-const email = "850207333@qq.com";
-```
-
-替换成新的邮箱。
+开屏欢迎语位于 `TextType` 的 `text` 属性中，邮箱入口会同步使用 `email` 常量。
 
 ### 新增或修改项目
 
-搜索：
+在 `src/App.jsx` 的 `projects` 数组中编辑项目对象。常用字段如下：
 
-```jsx
-const projects = [
-```
+- `title`：项目标题。
+- `type`：项目类型或技术方向。
+- `date`：可选，项目时间。
+- `image`：项目封面路径。
+- `description`：项目简介。
+- `tags`：项目标签。
+- `github`：GitHub 链接。
+- `source` / `sourceLabel`：可选的第二个项目链接及按钮名称。
+- `metrics`：可选的关键测试数据。
+- `gallery`：可选的工程图片列表。
+- `detail.software`、`detail.hardware`、`detail.bom`、`detail.cost`、`detail.stack`、`detail.result`：项目详情内容。
 
-每个项目对象包含：
+项目图片放在 `public/images/projects/`，在代码中通过 `assetPath("images/projects/xxx")` 引用。替换图片后，需要同步更新项目对象中的 `image` 或 `gallery[].src`。
 
-- `title`：项目标题
-- `type`：项目类型 / 技术方向
-- `image`：项目封面
-- `description`：项目一句话介绍
-- `tags`：项目标签
-- `github`：GitHub 链接
-- `source`：可选，项目页面链接，例如 OSHWHub
-- `sourceLabel`：可选，第二个按钮的显示名称
-- `detail.software`：软件方案
-- `detail.hardware`：硬件方案
-- `detail.bom`：物料选型
-- `detail.cost`：成本
-- `detail.stack`：技术栈
-- `detail.result`：实际效果文字说明
+### 修改知识专栏
 
-### 替换项目图片
+知识专栏首页卡片位于 `src/knowledge/KnowledgeSection.jsx`。文章元数据集中在 `src/knowledge/articles.js`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`，四篇无源器件正文位于 `src/knowledge/articles/`，旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
 
-项目图片放在：
+当前文章使用以下 Hash 地址：
 
 ```text
-public/images/projects/
+#/knowledge/resistor
+#/knowledge/capacitor
+#/knowledge/inductor
+#/knowledge/ferrite-bead
+#/knowledge/capacitor-inductor
 ```
 
-推荐使用 JPG / PNG / WebP，图片宽度建议不小于 1200px。替换图片后，在 `src/App.jsx` 中确认项目的 `image` 指向正确文件。
+新增文章时，先在 `src/knowledge/articles.js` 注册元数据和章节，再在 `src/knowledge/ReviewArticle.jsx` 绑定正文组件。课件裁切图放在 `public/images/knowledge/passive-components/`，正文使用 WebP，高清查看链接使用对应的 `-hd.jpg` 文件。公开 PDF 位于 `public/downloads/passive-components-review.pdf`。
 
-### 修改头像 / 人物图
+### 替换头像和项目素材
 
-默认人物图：
+- 头像：`public/images/profile.svg`
+- Hero 海报：`public/images/hero-poster.svg`
+- 项目封面与工程图片：`public/images/projects/`
+- 网站图标：`public/favicon.svg`
 
-```text
-public/images/profile.svg
-```
+本地视频可以放到 `public/videos/`，并使用 `assetPath("videos/xxx.mp4")` 生成兼容部署子路径的地址。
 
-可以替换成自己的头像、工程照、工作台照片或更正式的人物图。
+## 部署
 
-### 修改 Hero 视频
+### Vercel
 
-搜索：
+Vercel 对 Vite 项目无需额外配置：
 
-```jsx
-const heroVideoUrl =
-```
-
-替换成你自己的公开视频地址。如果想使用本地视频，可以把视频放到 `public/videos/`，再用 `assetPath("videos/xxx.mp4")` 引用。
-
-### 修改知识专栏文章
-
-首页文章卡片位于：
-
-```text
-src/knowledge/KnowledgeSection.jsx
-```
-
-文章正文、目录和页面标题位于：
-
-```text
-src/knowledge/KnowledgeArticle.jsx
-```
-
-当前文章使用固定地址 `#/knowledge/capacitor-inductor`。如需新增文章，需要在 `src/knowledge/route.js` 增加路由解析，并在 `src/App.jsx` 中接入对应视图。
-
-## 部署上线方案
-
-推荐优先使用 Vercel。它对 Vite 项目支持最好，部署简单，后续绑定域名也方便。
-
-## 方案一：部署到 Vercel（推荐）
-
-### 1. 准备 GitHub 仓库
-
-在 GitHub 新建一个仓库，例如：
-
-```text
-embedded-blog
-```
-
-然后在项目目录执行：
-
-```bash
-git init
-git add .
-git commit -m "Initial embedded portfolio blog"
-git branch -M main
-git remote add origin https://github.com/你的GitHub用户名/embedded-blog.git
-git push -u origin main
-```
-
-如果本地已经有 Git 仓库，只需要确认远程地址正确，然后提交并推送：
-
-```bash
-git add .
-git commit -m "Update portfolio blog"
-git push
-```
-
-### 2. 导入 Vercel
-
-打开 Vercel，新建项目，选择刚才的 GitHub 仓库。
-
-配置保持默认即可：
-
-- Framework Preset：Vite
+- Framework Preset：`Vite`
 - Install Command：`npm install`
 - Build Command：`npm run build`
 - Output Directory：`dist`
 
-然后点击 Deploy。
+导入 GitHub 仓库后点击 Deploy。之后推送到关联分支，Vercel 会自动重新构建和部署。
 
-### 3. 更新网站
+### GitHub Pages
 
-以后每次修改项目后：
+项目的 `vite.config.js` 支持通过 `VITE_BASE` 配置部署在子路径下的站点。
 
-```bash
-git add .
-git commit -m "Update portfolio content"
-git push
-```
-
-Vercel 会自动重新部署。
-
-### 4. 绑定自定义域名（可选）
-
-在 Vercel 项目的 Domains 中添加你的域名，例如：
-
-```text
-blog.yourdomain.com
-```
-
-然后按照 Vercel 给出的提示，在域名服务商那里添加 DNS 记录。
-
-## 方案二：部署到 GitHub Pages
-
-GitHub Pages 完全免费，适合和 GitHub 仓库绑定使用。这里推荐用 GitHub Actions 自动部署。
-
-### 1. 判断部署地址类型
-
-如果仓库名是：
-
-```text
-你的GitHub用户名.github.io
-```
-
-网站地址会是：
-
-```text
-https://你的GitHub用户名.github.io/
-```
-
-这种情况 `base` 使用默认 `/`。
-
-如果仓库名是普通项目名，例如：
-
-```text
-embedded-blog
-```
-
-网站地址会是：
-
-```text
-https://你的GitHub用户名.github.io/embedded-blog/
-```
-
-这种情况构建时需要设置：
+如果仓库名为 `你的用户名.github.io`，使用默认路径 `/`。如果仓库名为普通项目名，例如 `embedded-blog`，构建时设置：
 
 ```text
 VITE_BASE=/embedded-blog/
 ```
 
-项目的 `vite.config.js` 已经支持这个环境变量。
+PowerShell 本地构建示例：
 
-### 2. 新建 GitHub Actions 工作流
-
-在项目中新建文件：
-
-```text
-.github/workflows/deploy.yml
-```
-
-如果你的仓库名是 `你的GitHub用户名.github.io`，使用：
-
-```yaml
-name: Deploy to GitHub Pages
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
-```
-
-如果你的仓库名是普通项目名，例如 `embedded-blog`，把构建步骤改成：
-
-```yaml
-      - run: npm run build
-        env:
-          VITE_BASE: /embedded-blog/
-```
-
-完整文件里只需要替换这一段即可。
-
-### 3. 打开 GitHub Pages
-
-进入 GitHub 仓库：
-
-```text
-Settings -> Pages
-```
-
-Source 选择：
-
-```text
-GitHub Actions
-```
-
-保存后，推送代码：
-
-```bash
-git add .
-git commit -m "Deploy portfolio blog"
-git push
-```
-
-稍等 Actions 跑完，就能访问 GitHub Pages 地址。
-
-## 上线前检查清单
-
-部署前建议先本地执行：
-
-```bash
-npm install
-node --test tests/*.test.mjs
+```powershell
+$env:VITE_BASE="/embedded-blog/"
 npm run build
-npm run preview
 ```
 
-然后检查：
+GitHub Actions 可以使用以下构建步骤：
 
-- 首页 Hero 是否正常显示视频背景和欢迎文本。
-- 导航锚点是否能跳转到 Experience / Projects / Capabilities / Knowledge。
-- 三个项目卡片是否正常显示封面。
-- 点击项目卡片后详情面板是否能打开和关闭。
-- 知识专栏卡片是否能进入 `#/knowledge/capacitor-inductor`。
-- 文章目录是否能跳转，返回知识专栏后页面位置是否正确。
-- 邮箱链接是否打开邮件客户端。
-- GitHub / OSHWHub 链接是否能打开。
-- 页面刷新后没有空白页。
-- 浏览器控制台没有资源 404。
+```yaml
+- uses: actions/checkout@v4
+- uses: actions/setup-node@v4
+  with:
+    node-version: 22
+    cache: npm
+- run: npm ci
+- run: npm run build
+- uses: actions/upload-pages-artifact@v3
+  with:
+    path: dist
+```
+
+普通项目仓库需要在构建步骤中补充环境变量：
+
+```yaml
+- run: npm run build
+  env:
+    VITE_BASE: /embedded-blog/
+```
+
+部署前在 GitHub 仓库的 `Settings -> Pages` 中将 Source 设置为 `GitHub Actions`。
+
+## 上线前检查
+
+先执行：
+
+```bash
+npm run build
+node --test
+```
+
+然后手动确认：
+
+- 首页 Hero、海报图和欢迎文案正常显示。
+- `Experience`、`Projects`、`Capabilities`、`Knowledge` 导航可以正常跳转。
+- 三个项目卡片图片正常，项目详情面板可以打开、关闭，并能访问 GitHub / OSHWHub 链接。
+- 四篇无源器件文章及旧文章都能打开，目录、上一篇 / 下一篇和返回专栏入口可用。
+- 专栏顶部和文章页尾可以下载 `passive-components-review.pdf`，正文配图可以打开高清版本。
+- 邮箱链接可以打开邮件客户端。
+- 部署后的图片、CSS、JS 等资源没有 404。
+- 页面刷新后没有空白页，浏览器控制台没有运行时错误。
 
 ## 常见问题
 
-### 部署后图片不显示
+### GitHub Pages 部署后图片或资源不显示
 
-如果使用 GitHub Pages 的普通仓库路径，例如 `/embedded-blog/`，请确认构建时设置了：
+确认构建时设置了正确的仓库子路径，例如：
 
 ```text
 VITE_BASE=/embedded-blog/
 ```
 
-Vercel 一般不需要设置。
+Vercel 部署通常保持默认的 `/` 即可。
 
 ### 部署后页面空白
 
-先检查构建是否成功：
-
-```bash
-npm run build
-```
-
-再检查部署平台的输出目录是否是：
+确认构建命令执行成功，并检查部署平台的输出目录是否为：
 
 ```text
 dist
 ```
 
-如果本地执行 `npm run build` 时提示找不到 `vite`，先确认依赖已安装并且 `node_modules` 目录存在：
-
-```bash
-npm install
-npm run build
-```
+如果是 GitHub Pages 普通项目仓库，还需要确认 `VITE_BASE` 与仓库名一致。
 
 ### 修改后线上没有变化
 
-确认已经提交并推送：
+确认文件已经提交并推送：
 
 ```bash
 git status
@@ -450,4 +254,4 @@ git commit -m "Update site"
 git push
 ```
 
-Vercel 和 GitHub Pages 都需要等自动部署完成后才会更新。
+然后等待 Vercel 或 GitHub Actions 完成自动部署。

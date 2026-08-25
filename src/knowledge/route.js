@@ -1,7 +1,12 @@
-export const ARTICLE_HASH = "#/knowledge/capacitor-inductor";
+import { articleRegistry, legacyArticle } from "./articles.js";
+
+export const ARTICLE_HASH = legacyArticle.hash;
+export const ARTICLE_HASHES = Object.fromEntries(
+  articleRegistry.map((article) => [article.slug, article.hash])
+);
 
 export function resolveKnowledgeRoute(hash) {
-  return hash === ARTICLE_HASH ? "capacitor-inductor" : null;
+  return articleRegistry.find((article) => article.hash === hash)?.slug ?? null;
 }
 
 export function resetArticleScroll(viewport = window) {

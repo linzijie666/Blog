@@ -1,48 +1,49 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { access, readFile } from "node:fs/promises";
 import test from "node:test";
 
 const read = (filePath) => readFile(new URL(`../${filePath}`, import.meta.url), "utf8");
 
 test("the article teaches the time-domain and frequency-domain models", async () => {
-  const article = await read("src/knowledge/KnowledgeArticle.jsx");
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/KnowledgeArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+  const articleSource = `${registry}\n${article}`;
 
-  assert.match(article, /电容“隔直通交”与电感“通直隔交”的原理/);
-  assert.match(article, /i.*=.*C.*du.*dt/s);
-  assert.match(article, /u.*=.*L.*di.*dt/s);
-  assert.match(article, /Z.*C.*=.*1.*j.*ω.*C/s);
-  assert.match(article, /Z.*L.*=.*j.*ω.*L/s);
-  assert.match(article, /通信工程中的典型应用/);
-  assert.match(article, /自谐振频率/);
+  assert.match(articleSource, /电容“隔直通交”与电感“通直隔交”的原理/);
+  assert.match(articleSource, /i.*=.*C.*du.*dt/s);
+  assert.match(articleSource, /u.*=.*L.*di.*dt/s);
+  assert.match(articleSource, /Z.*C.*=.*1.*j.*ω.*C/s);
+  assert.match(articleSource, /Z.*L.*=.*j.*ω.*L/s);
+  assert.match(articleSource, /通信工程中的典型应用/);
+  assert.match(articleSource, /自谐振频率/);
 });
 
 test("the article exposes clear return and contact paths", async () => {
   const article = await read("src/knowledge/KnowledgeArticle.jsx");
 
-  assert.match(article, /href="\.\/#knowledge"/);
-  assert.match(article, /mailto:\$\{email\}/);
-  assert.match(article, /<article/);
-  assert.match(article, /aria-label="文章目录"/);
-  assert.match(article, /useLayoutEffect/);
-  assert.match(article, /resetArticleScroll/);
+  assert.match(article, /import ArticleShell/);
+  assert.match(article, /legacyArticle/);
+  assert.match(article, /<ArticleShell article=\{legacyArticle\} email=\{email\}>/);
 });
 
 test("the client-side article route announces the new view", async () => {
-  const article = await read("src/knowledge/KnowledgeArticle.jsx");
+  const shell = await read("src/knowledge/ArticleShell.jsx");
 
-  assert.match(article, /useRef/);
-  assert.match(article, /ref=\{mainRef\}/);
-  assert.match(article, /tabIndex="-1"/);
-  assert.match(article, /document\.title\s*=/);
-  assert.match(article, /focus\(\{ preventScroll: true \}\)/);
+  assert.match(shell, /useRef/);
+  assert.match(shell, /ref=\{mainRef\}/);
+  assert.match(shell, /tabIndex="-1"/);
+  assert.match(shell, /document\.title\s*=/);
+  assert.match(shell, /focus\(\{ preventScroll: true \}\)/);
 });
 
 test("the article table of contents preserves the article hash route", async () => {
-  const article = await read("src/knowledge/KnowledgeArticle.jsx");
+  const shell = await read("src/knowledge/ArticleShell.jsx");
 
-  assert.match(article, /href=\{ARTICLE_HASH\}/);
-  assert.match(article, /scrollToArticleSection/);
-  assert.doesNotMatch(article, /href=\{`#\$\{id\}`\}/);
+  assert.match(shell, /href=\{article\.hash\}/);
+  assert.match(shell, /scrollToArticleSection/);
+  assert.doesNotMatch(shell, /href=\{`#\$\{id\}`\}/);
 });
 
 test("the capacitor and inductor comparison uses native table semantics", async () => {
@@ -68,8 +69,8 @@ test("the homepage replaces the contact finale with the knowledge column", async
   assert.match(app, /scrollToHomeAnchor\(locationHash\)/);
   assert.match(section, /id="knowledge"/);
   assert.match(section, /tabIndex="-1"/);
-  assert.match(section, /ARTICLE_HASH/);
-  assert.match(section, /阅读全文/);
+  assert.match(section, /legacyArticle\.hash/);
+  assert.match(section, /开始复习/);
 });
 
 test("the floating shortcut remains an email contact path", async () => {
@@ -89,4 +90,91 @@ test("knowledge layouts are responsive and motion-safe", async () => {
   assert.match(css, /@media\s*\(max-width:\s*768px\)/);
   assert.match(css, /prefers-reduced-motion:\s*reduce/);
   assert.doesNotMatch(css, /min-width:\s*1180px/);
+});
+
+test("the shared article shell owns navigation, metadata and the PDF download", async () => {
+  const shell = await read("src/knowledge/ArticleShell.jsx");
+
+  assert.match(shell, /article-site-header/);
+  assert.match(shell, /aria-label="文章目录"/);
+  assert.match(shell, /上一篇/);
+  assert.match(shell, /下一篇/);
+  assert.match(shell, /返回知识专栏/);
+  assert.match(shell, /downloads\/passive-components-review\.pdf/);
+  assert.match(shell, /下载完整复习课件/);
+  assert.match(shell, /resetArticleScroll/);
+});
+
+test("the four passive component articles cover the agreed interview-review content", async () => {
+  const files = {
+    resistor: await read("src/knowledge/articles/ResistorArticle.jsx"),
+    capacitor: await read("src/knowledge/articles/CapacitorArticle.jsx"),
+    inductor: await read("src/knowledge/articles/InductorArticle.jsx"),
+    ferrite: await read("src/knowledge/articles/FerriteBeadArticle.jsx")
+  };
+
+  assert.match(files.resistor, /精度.*耐压.*功率.*温度系数/s);
+  assert.match(files.resistor, /分压.*端接匹配.*电流采样.*0Ω/s);
+  assert.match(files.capacitor, /耦合.*去耦.*滤波.*储能.*自举.*谐振.*定时/s);
+  assert.match(files.capacitor, /X5R.*X7R.*C0G.*直流偏压/s);
+  assert.match(files.capacitor, /ESR.*ESL.*PDN/s);
+  assert.match(files.inductor, /DCR.*饱和电流.*RMS.*温升/s);
+  assert.match(files.inductor, /磁芯.*封装.*选型流程/s);
+  assert.match(files.ferrite, /阻抗曲线.*额定电流.*直流偏置/s);
+  assert.match(files.ferrite, /磁珠和电感的异同/);
+
+  for (const source of Object.values(files)) {
+    assert.ok((source.match(/<details/g) ?? []).length >= 3);
+    assert.match(source, /<summary>/);
+  }
+});
+
+test("article figures require accessible descriptions, captions and source pages", async () => {
+  const figure = await read("src/knowledge/ArticleFigure.jsx");
+
+  assert.match(figure, /alt/);
+  assert.match(figure, /caption/);
+  assert.match(figure, /sourcePage/);
+  assert.match(figure, /查看高清图/);
+  assert.match(figure, /loading="lazy"/);
+});
+
+test("the homepage and app expose all review articles while preserving the legacy article", async () => {
+  const [app, section] = await Promise.all([
+    read("src/App.jsx"),
+    read("src/knowledge/KnowledgeSection.jsx")
+  ]);
+
+  assert.match(app, /<ReviewArticle slug=\{knowledgeRoute\}/);
+  assert.match(app, /knowledgeRoute === "capacitor-inductor"/);
+  assert.match(section, /reviewArticles\.map/);
+  assert.match(section, /延伸阅读/);
+  assert.match(section, /下载完整课件/);
+});
+
+test("the downloadable course PDF is published as a static resource", async () => {
+  await access(new URL("../public/downloads/passive-components-review.pdf", import.meta.url));
+});
+
+test("every referenced article image has a web and high-resolution asset", async () => {
+  const sources = await Promise.all([
+    read("src/knowledge/articles/ResistorArticle.jsx"),
+    read("src/knowledge/articles/CapacitorArticle.jsx"),
+    read("src/knowledge/articles/InductorArticle.jsx"),
+    read("src/knowledge/articles/FerriteBeadArticle.jsx")
+  ]);
+  const figures = sources.flatMap((source) => [...source.matchAll(/<ArticleFigure\s+([^>]+)\/>/g)]);
+
+  assert.equal(figures.length, 6);
+  for (const [, attributes] of figures) {
+    const src = attributes.match(/src="([^"]+)"/)?.[1];
+    const fullSrc = attributes.match(/fullSrc="([^"]+)"/)?.[1];
+    const alt = attributes.match(/alt="([^"]+)"/)?.[1];
+    const caption = attributes.match(/caption="([^"]+)"/)?.[1];
+    const sourcePage = attributes.match(/sourcePage="([^"]+)"/)?.[1];
+
+    assert.ok(src && fullSrc && alt && caption && sourcePage);
+    await access(new URL(`../public/${src}`, import.meta.url));
+    await access(new URL(`../public/${fullSrc}`, import.meta.url));
+  }
 });

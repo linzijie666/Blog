@@ -1,16 +1,5 @@
-import { useLayoutEffect, useRef } from "react";
-import { ArrowLeft, Mail } from "lucide-react";
-import { ARTICLE_HASH, resetArticleScroll, scrollToArticleSection } from "./route.js";
-
-const sections = [
-  ["intuition", "先纠正一句口诀"],
-  ["capacitor", "电容为什么隔直流、通交流"],
-  ["inductor", "电感为什么通直流、隔交流"],
-  ["comparison", "电容与电感的对偶关系"],
-  ["applications", "通信工程中的典型应用"],
-  ["nonideal", "真实器件并不理想"],
-  ["summary", "最后记住这四句话"]
-];
+import ArticleShell from "./ArticleShell.jsx";
+import { legacyArticle } from "./articles.js";
 
 function Formula({ label, children, note }) {
   return (
@@ -25,65 +14,8 @@ function Formula({ label, children, note }) {
 }
 
 export default function KnowledgeArticle({ email }) {
-  const mainRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const previousTitle = document.title;
-
-    document.title = "电容与电感的交直流原理 | LzjEngineer";
-    resetArticleScroll();
-    mainRef.current?.focus({ preventScroll: true });
-
-    return () => {
-      document.title = previousTitle;
-    };
-  }, []);
-
   return (
-    <div className="article-page">
-      <header className="article-site-header">
-        <a className="brand" href="./#hero" aria-label="返回博客首页">
-          <span className="brand-mark">LZJ</span>
-          <span>
-            <strong>LzjEngineer</strong>
-            <small>Knowledge Notes</small>
-          </span>
-        </a>
-        <a className="header-contact" href={`mailto:${email}`}>
-          <Mail size={17} />
-          Contact
-        </a>
-      </header>
-
-      <main className="article-layout" ref={mainRef} tabIndex="-1">
-        <article className="knowledge-article">
-          <header className="article-hero">
-            <a className="article-back" href="./#knowledge">
-              <ArrowLeft size={18} />
-              返回知识专栏
-            </a>
-            <p className="eyebrow">电路基础 / 课堂笔记 / 约 5 至 8 分钟</p>
-            <h1>电容“隔直通交”与电感“通直隔交”的原理</h1>
-            <p className="article-lead">
-              从时域微分关系和频域阻抗两条线，理解这两句口诀成立的条件、暂态过程，以及它们在通信电路中的真实用法。
-            </p>
-          </header>
-
-          <nav className="article-toc" aria-label="文章目录">
-            {sections.map(([id, title]) => (
-              <a
-                href={ARTICLE_HASH}
-                key={id}
-                onClick={(event) => {
-                  event.preventDefault();
-                  scrollToArticleSection(id);
-                }}
-              >
-                {title}
-              </a>
-            ))}
-          </nav>
-
+    <ArticleShell article={legacyArticle} email={email}>
           <section id="intuition">
             <h2>先纠正一句口诀</h2>
             <p>
@@ -220,8 +152,6 @@ export default function KnowledgeArticle({ email }) {
               <li>“通”和“隔”都是相对阻抗，不代表现实器件的绝对开路或短路。</li>
             </ol>
           </section>
-        </article>
-      </main>
-    </div>
+    </ArticleShell>
   );
 }

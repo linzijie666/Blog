@@ -3,6 +3,7 @@ import test from "node:test";
 import {
   ARTICLE_HASH,
   ARTICLE_HASHES,
+  DIODE_ARTICLE_HASH,
   resetArticleScroll,
   resolveKnowledgeRoute,
   scrollToHomeAnchor,
@@ -26,6 +27,11 @@ test("the passive component review articles have stable hash routes", () => {
   for (const [slug, hash] of Object.entries(ARTICLE_HASHES)) {
     assert.equal(resolveKnowledgeRoute(hash), slug);
   }
+});
+
+test("the diode article keeps its remote hash route after integration", () => {
+  assert.equal(DIODE_ARTICLE_HASH, "#/knowledge/diode");
+  assert.equal(resolveKnowledgeRoute(DIODE_ARTICLE_HASH), "diode");
 });
 
 test("home anchors and unknown hashes safely resolve to the homepage", () => {

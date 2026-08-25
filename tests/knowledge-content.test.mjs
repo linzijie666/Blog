@@ -152,6 +152,22 @@ test("the homepage and app expose all review articles while preserving the legac
   assert.match(section, /下载完整课件/);
 });
 
+test("the integrated homepage and app preserve the remote diode article", async () => {
+  const [app, section, diode] = await Promise.all([
+    read("src/App.jsx"),
+    read("src/knowledge/KnowledgeSection.jsx"),
+    read("src/knowledge/DiodeArticle.jsx")
+  ]);
+
+  assert.match(app, /import DiodeArticle/);
+  assert.match(app, /knowledgeRoute === "diode"/);
+  assert.match(app, /<DiodeArticle email=\{email\}/);
+  assert.match(section, /DIODE_ARTICLE_HASH/);
+  assert.match(section, /二极管：从 PN 结到整流、限幅与稳压/);
+  assert.match(diode, /Shockley PN 结电流方程/);
+  assert.match(diode, /反向恢复/);
+});
+
 test("the downloadable course PDF is published as a static resource", async () => {
   await access(new URL("../public/downloads/passive-components-review.pdf", import.meta.url));
 });

@@ -1,11 +1,13 @@
 import { articleRegistry, legacyArticle } from "./articles.js";
 
 export const ARTICLE_HASH = legacyArticle.hash;
+export const DIODE_ARTICLE_HASH = "#/knowledge/diode";
 export const ARTICLE_HASHES = Object.fromEntries(
   articleRegistry.map((article) => [article.slug, article.hash])
 );
 
 export function resolveKnowledgeRoute(hash) {
+  if (hash === DIODE_ARTICLE_HASH) return "diode";
   return articleRegistry.find((article) => article.hash === hash)?.slug ?? null;
 }
 

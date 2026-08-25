@@ -1,5 +1,6 @@
-import { ArrowUpRight, BookOpen, CircuitBoard, Download, Magnet, Radio, Waves } from "lucide-react";
+import { ArrowUpRight, BookOpen, CircuitBoard, Download, Magnet, Radio, Waves, Zap } from "lucide-react";
 import { legacyArticle, reviewArticles } from "./articles.js";
+import { DIODE_ARTICLE_HASH } from "./route.js";
 
 const articleIcons = {
   resistor: CircuitBoard,
@@ -42,6 +43,15 @@ export default function KnowledgeSection() {
             );
           })}
         </div>
+
+        <a className="knowledge-legacy knowledge-diode" href={DIODE_ARTICLE_HASH}>
+          <span>
+            <Zap size={20} />
+            <small>半导体器件 / 秋招速复</small>
+            <strong>二极管：从 PN 结到整流、限幅与稳压</strong>
+          </span>
+          <span>约 30–45 分钟<ArrowUpRight size={18} /></span>
+        </a>
 
         <a className="knowledge-legacy" href={legacyArticle.hash}>
           <span><small>延伸阅读</small><strong>{legacyArticle.title}</strong></span>

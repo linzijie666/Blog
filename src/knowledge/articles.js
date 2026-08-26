@@ -17,7 +17,7 @@ const reviewArticleDefinitions = [
     slug: "capacitor",
     title: "电容：去耦、储能与高频模型复习",
     summary: "从电容的七类功能出发，掌握介质类型、MLCC 温度等级、直流偏压、ESR/ESL 与 PDN 并联设计。",
-    readingTime: "约 15 分钟",
+    readingTime: "约 22 分钟",
     sections: [
       ["principle", "电容的核心关系"],
       ["functions", "七类典型功能"],

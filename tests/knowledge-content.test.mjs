@@ -178,6 +178,41 @@ test("the expanded resistor article covers ratings, applications and an ADC exam
   assert.match(registry, /slug: "resistor"[\s\S]*?readingTime: "约 18 分钟"/);
 });
 
+test("the expanded capacitor article covers practical functions and effective capacitance", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/CapacitorArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of [
+    "交流耦合",
+    "旁路",
+    "电荷泵",
+    "自举",
+    "RC 定时",
+    "介质吸收",
+    "纹波电流",
+    "直流偏压",
+    "自谐振频率",
+    "反谐振",
+    "目标阻抗"
+  ]) {
+    assert.match(article, new RegExp(topic));
+  }
+
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  assert.match(article, /title="去耦电容与有效容值校核"/);
+  for (const image of [
+    "capacitor-functions",
+    "capacitor-pump-timing",
+    "capacitor-selection",
+    "capacitor-pdn"
+  ]) {
+    assert.match(article, new RegExp(image));
+  }
+  assert.match(registry, /slug: "capacitor"[\s\S]*?readingTime: "约 22 分钟"/);
+});
+
 test("the figure-group primitive delegates every item to ArticleFigure", async () => {
   const group = await read("src/knowledge/ArticleFigureGroup.jsx");
 

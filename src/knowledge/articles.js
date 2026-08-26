@@ -33,7 +33,7 @@ const reviewArticleDefinitions = [
     slug: "inductor",
     title: "电感：DCR、饱和电流与功率选型",
     summary: "围绕储能机理、感值、DCR、饱和电流和温升电流，建立开关电源功率电感的完整选型流程。",
-    readingTime: "约 10 分钟",
+    readingTime: "约 14 分钟",
     sections: [
       ["principle", "电感的储能与电流惯性"],
       ["parameters", "五个关键选型参数"],
@@ -48,7 +48,7 @@ const reviewArticleDefinitions = [
     slug: "ferrite-bead",
     title: "磁珠：高频噪声抑制与电感辨析",
     summary: "理解磁珠如何把高频噪声转化为损耗，并掌握阻抗曲线、额定电流、直流偏置和磁珠与电感的选用边界。",
-    readingTime: "约 8 分钟",
+    readingTime: "约 12 分钟",
     sections: [
       ["principle", "磁珠为什么能抑制高频噪声"],
       ["parameters", "阻抗曲线与额定参数"],

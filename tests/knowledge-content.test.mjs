@@ -213,6 +213,38 @@ test("the expanded capacitor article covers practical functions and effective ca
   assert.match(registry, /slug: "capacitor"[\s\S]*?readingTime: "约 22 分钟"/);
 });
 
+test("the expanded inductor article covers current limits, loss and Buck selection", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/InductorArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of ["电感纹波", "峰值电流", "DCR 铜损", "饱和电流", "RMS 电流", "磁芯损耗"]) {
+    assert.match(article, new RegExp(topic));
+  }
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  assert.match(article, /title="Buck 功率电感选型"/);
+  assert.match(article, /inductor-dcr/);
+  assert.match(article, /inductor-current/);
+  assert.match(registry, /slug: "inductor"[\s\S]*?readingTime: "约 14 分钟"/);
+});
+
+test("the expanded ferrite article covers bias, resonance and measured-noise selection", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/FerriteBeadArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of ["目标噪声频段", "阻性分量", "直流偏置", "π 型滤波", "谐振峰"]) {
+    assert.match(article, new RegExp(topic));
+  }
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  assert.match(article, /title="磁珠电源滤波选型"/);
+  assert.match(article, /ferrite-applications/);
+  assert.match(article, /ferrite-comparison/);
+  assert.match(registry, /slug: "ferrite-bead"[\s\S]*?readingTime: "约 12 分钟"/);
+});
+
 test("the figure-group primitive delegates every item to ArticleFigure", async () => {
   const group = await read("src/knowledge/ArticleFigureGroup.jsx");
 

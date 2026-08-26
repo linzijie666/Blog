@@ -593,18 +593,37 @@
   object-fit: contain;
 }
 
-.article-figure-link > span {
-  position: absolute;
-  right: 14px;
-  bottom: 14px;
+.article-figure-group {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 30px 0;
+}
+
+.article-figure-group .article-figure {
+  min-width: 0;
+  margin: 0;
+}
+
+.article-figure-group .article-figure img {
+  height: min(46vw, 540px);
+}
+
+.article-figure-meta,
+.article-figure-meta a {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  border-radius: 999px;
-  padding: 9px 13px;
-  background: rgba(5, 7, 12, 0.88);
-  color: #ffffff;
-  font-size: 13px;
+}
+
+.article-figure-meta {
+  flex: 0 0 auto;
+  gap: 14px;
+}
+
+.article-figure-meta a {
+  color: #16647a;
+  font-weight: 800;
 }
 
 .article-figure figcaption,
@@ -623,6 +642,83 @@
 .article-figure figcaption small {
   flex: 0 0 auto;
   color: #667085;
+}
+
+.knowledge-article .worked-example {
+  overflow: hidden;
+  margin-top: 34px;
+  border: 1px solid rgba(93, 225, 255, 0.3);
+  border-radius: 10px;
+  background: rgba(14, 22, 33, 0.92);
+}
+
+.worked-example > header {
+  border-bottom: 1px solid var(--line);
+  padding: 24px;
+  background: rgba(93, 225, 255, 0.06);
+}
+
+.worked-example > header span {
+  color: var(--cyan);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.knowledge-article .worked-example h3 {
+  margin-top: 10px;
+  font-size: 24px;
+}
+
+.worked-example-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.worked-example-grid > div {
+  min-width: 0;
+  padding: 22px 24px;
+}
+
+.worked-example-grid > div:nth-child(even) {
+  border-left: 1px solid var(--line);
+}
+
+.worked-example-grid > div:nth-child(n + 3) {
+  border-top: 1px solid var(--line);
+}
+
+.worked-example-grid h4 {
+  margin: 0;
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.worked-example-grid ul,
+.worked-example-grid ol {
+  margin: 14px 0 0;
+  padding-left: 1.2rem;
+}
+
+.worked-example-grid li,
+.worked-example-grid p {
+  color: var(--soft);
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.worked-example-grid li + li {
+  margin-top: 8px;
+}
+
+.worked-example-grid p {
+  margin: 14px 0 0;
+}
+
+.worked-example-grid > div:nth-child(2) li {
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  font-size: 13px;
 }
 
 .circuit-diagram {
@@ -741,6 +837,8 @@
 @media (max-width: 768px) {
   .knowledge-grid,
   .selection-grid,
+  .article-figure-group,
+  .worked-example-grid,
   .article-pagination {
     grid-template-columns: 1fr;
   }
@@ -758,6 +856,23 @@
 
   .knowledge-legacy span:last-child {
     flex-direction: row;
+  }
+
+  .article-figure-group .article-figure img {
+    height: auto;
+  }
+
+  .article-figure-meta {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .worked-example-grid > div:nth-child(even) {
+    border-left: 0;
+  }
+
+  .worked-example-grid > div + div {
+    border-top: 1px solid var(--line);
   }
 
   .circuit-diagram {

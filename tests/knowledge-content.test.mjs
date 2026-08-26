@@ -145,6 +145,18 @@ test("article figures require accessible descriptions, captions and source pages
   assert.match(caption, /查看高清图/);
 });
 
+test("enhanced long-form layouts support figure groups and worked examples", async () => {
+  const css = await read("src/knowledge/knowledge.css");
+
+  assert.match(css, /\.article-figure-group/);
+  assert.match(css, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(css, /\.worked-example/);
+  assert.match(css, /\.worked-example-grid/);
+  assert.match(css, /@media\s*\(max-width:\s*768px\)[\s\S]*?\.article-figure-group[\s\S]*?grid-template-columns:\s*1fr/);
+  assert.match(css, /@media\s*\(max-width:\s*768px\)[\s\S]*?\.worked-example-grid[\s\S]*?grid-template-columns:\s*1fr/);
+  assert.doesNotMatch(css, /\.article-figure-link\s*>\s*span/);
+});
+
 test("the expanded resistor article covers ratings, applications and an ADC example", async () => {
   const [article, registry] = await Promise.all([
     read("src/knowledge/articles/ResistorArticle.jsx"),

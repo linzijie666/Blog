@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, readFile } from "node:fs/promises";
+import { access, readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 const read = (filePath) => readFile(new URL(`../${filePath}`, import.meta.url), "utf8");
@@ -216,4 +216,29 @@ test("every referenced article image has a web and high-resolution asset", async
     await access(new URL(`../public/${src}`, import.meta.url));
     await access(new URL(`../public/${fullSrc}`, import.meta.url));
   }
+});
+
+test("enhanced passive-component assets exist without publishing full course pages", async () => {
+  const enhancedAssets = [
+    "resistor-package",
+    "resistor-power-current",
+    "resistor-applications",
+    "zero-ohm-applications",
+    "capacitor-functions",
+    "capacitor-pump-timing",
+    "capacitor-selection",
+    "capacitor-pdn",
+    "inductor-dcr",
+    "inductor-current",
+    "ferrite-applications",
+    "ferrite-comparison"
+  ];
+
+  for (const baseName of enhancedAssets) {
+    await access(new URL(`../public/images/knowledge/passive-components/${baseName}.webp`, import.meta.url));
+    await access(new URL(`../public/images/knowledge/passive-components/${baseName}-hd.jpg`, import.meta.url));
+  }
+
+  const publicImages = await readdir(new URL("../public/images/knowledge/passive-components/", import.meta.url));
+  assert.equal(publicImages.some((name) => name.startsWith("加水印第一章")), false);
 });

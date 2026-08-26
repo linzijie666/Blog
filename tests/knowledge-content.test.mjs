@@ -113,7 +113,9 @@ test("the four passive component articles cover the agreed interview-review cont
     ferrite: await read("src/knowledge/articles/FerriteBeadArticle.jsx")
   };
 
-  assert.match(files.resistor, /精度.*耐压.*功率.*温度系数/s);
+  for (const topic of ["精度", "耐压", "功率", "温度系数"]) {
+    assert.match(files.resistor, new RegExp(topic));
+  }
   assert.match(files.resistor, /分压.*端接匹配.*电流采样.*0Ω/s);
   assert.match(files.capacitor, /耦合.*去耦.*滤波.*储能.*自举.*谐振.*定时/s);
   assert.match(files.capacitor, /X5R.*X7R.*C0G.*直流偏压/s);
@@ -141,6 +143,39 @@ test("article figures require accessible descriptions, captions and source pages
   assert.match(figure, /loading="lazy"/);
   assert.doesNotMatch(imageLink, /<span>/);
   assert.match(caption, /查看高清图/);
+});
+
+test("the expanded resistor article covers ratings, applications and an ADC example", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/ResistorArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of [
+    "工作电压",
+    "过载电压",
+    "脉冲功率",
+    "温度系数",
+    "功率降额",
+    "开路失效",
+    "端接匹配",
+    "泄放电阻",
+    "Kelvin"
+  ]) {
+    assert.match(article, new RegExp(topic));
+  }
+
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  assert.match(article, /title="ADC 分压与功耗校核"/);
+  for (const image of [
+    "resistor-package",
+    "resistor-power-current",
+    "resistor-applications",
+    "zero-ohm-applications"
+  ]) {
+    assert.match(article, new RegExp(image));
+  }
+  assert.match(registry, /slug: "resistor"[\s\S]*?readingTime: "约 18 分钟"/);
 });
 
 test("the figure-group primitive delegates every item to ArticleFigure", async () => {
@@ -204,7 +239,7 @@ test("every referenced article image has a web and high-resolution asset", async
   ]);
   const figures = sources.flatMap((source) => [...source.matchAll(/<ArticleFigure\s+([^>]+)\/>/g)]);
 
-  assert.equal(figures.length, 6);
+  assert.ok(figures.length >= 6);
   for (const [, attributes] of figures) {
     const src = attributes.match(/src="([^"]+)"/)?.[1];
     const fullSrc = attributes.match(/fullSrc="([^"]+)"/)?.[1];

@@ -3,7 +3,7 @@ const reviewArticleDefinitions = [
     slug: "resistor",
     title: "电阻：从参数选型到 0Ω 电阻的工程用法",
     summary: "系统复习电阻的精度、耐压、功率与降额，并串联分压、匹配、采样、限流和 0Ω 电阻的典型面试问题。",
-    readingTime: "约 12 分钟",
+    readingTime: "约 18 分钟",
     sections: [
       ["principle", "先建立电阻的工程直觉"],
       ["parameters", "选型参数与降额"],

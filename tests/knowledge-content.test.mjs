@@ -131,12 +131,35 @@ test("the four passive component articles cover the agreed interview-review cont
 
 test("article figures require accessible descriptions, captions and source pages", async () => {
   const figure = await read("src/knowledge/ArticleFigure.jsx");
+  const imageLink = figure.match(/className="article-figure-link"[\s\S]*?<\/a>/)?.[0] ?? "";
+  const caption = figure.match(/<figcaption>[\s\S]*?<\/figcaption>/)?.[0] ?? "";
 
   assert.match(figure, /alt/);
   assert.match(figure, /caption/);
   assert.match(figure, /sourcePage/);
   assert.match(figure, /查看高清图/);
   assert.match(figure, /loading="lazy"/);
+  assert.doesNotMatch(imageLink, /<span>/);
+  assert.match(caption, /查看高清图/);
+});
+
+test("the figure-group primitive delegates every item to ArticleFigure", async () => {
+  const group = await read("src/knowledge/ArticleFigureGroup.jsx");
+
+  assert.match(group, /className="article-figure-group"/);
+  assert.match(group, /figures\.map/);
+  assert.match(group, /<ArticleFigure key=\{figure\.src\} \{\.\.\.figure\} \/>/);
+});
+
+test("the worked example primitive exposes the four review stages", async () => {
+  const example = await read("src/knowledge/WorkedExample.jsx");
+
+  assert.match(example, /className="worked-example"/);
+  assert.match(example, /已知条件/);
+  assert.match(example, /计算过程/);
+  assert.match(example, /器件校核/);
+  assert.match(example, /面试回答/);
+  assert.match(example, /aria-labelledby/);
 });
 
 test("the homepage and app expose all review articles while preserving the legacy article", async () => {

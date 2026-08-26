@@ -13,14 +13,16 @@ export default function ArticleFigure({ src, fullSrc = src, alt, caption, source
         aria-label={`查看高清图：${alt}`}
       >
         <img src={assetPath(src)} alt={alt} loading="lazy" />
-        <span>
-          <Maximize2 size={16} />
-          查看高清图
-        </span>
       </a>
       <figcaption>
         <span>{caption}</span>
-        <small>课件第 {sourcePage} 页</small>
+        <span className="article-figure-meta">
+          <small>课件第 {sourcePage} 页</small>
+          <a href={assetPath(fullSrc)} target="_blank" rel="noreferrer">
+            <Maximize2 size={15} />
+            查看高清图
+          </a>
+        </span>
       </figcaption>
     </figure>
   );

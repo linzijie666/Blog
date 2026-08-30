@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from "react";
 import { ArrowLeft, Mail } from "lucide-react";
+import FormulaText, { formulaPlainText } from "./FormulaText.jsx";
 import { DIODE_ARTICLE_HASH, resetArticleScroll, scrollToArticleSection } from "./route.js";
 
 const sections = [
@@ -18,10 +19,10 @@ function Formula({ label, children, note }) {
   return (
     <figure className="formula-block">
       <figcaption>{label}</figcaption>
-      <div className="formula" aria-label={`${label}：${children}`}>
-        {children}
+      <div className="formula" aria-label={`${label}：${formulaPlainText(children)}`}>
+        <FormulaText text={children} />
       </div>
-      <p>{note}</p>
+      <p><FormulaText text={note} /></p>
     </figure>
   );
 }
@@ -41,8 +42,8 @@ function ComparisonTable({ caption, headers, rows }) {
         <tbody>
           {rows.map((row) => (
             <tr key={row[0]}>
-              <th scope="row">{row[0]}</th>
-              {row.slice(1).map((cell) => <td key={cell}>{cell}</td>)}
+              <th scope="row"><FormulaText text={row[0]} /></th>
+              {row.slice(1).map((cell) => <td key={cell}><FormulaText text={cell} /></td>)}
             </tr>
           ))}
         </tbody>
@@ -106,7 +107,7 @@ export default function DiodeArticle({ email }) {
               P 区空穴向 N 区扩散，N 区电子向 P 区扩散；交界处留下不能移动的离子，形成空间电荷区。空间电荷区建立内建电场，电场引起的漂移运动最终抵消扩散运动，达到动态平衡。
             </p>
             <Formula label="内建电势（突变结近似）" note="温度、掺杂浓度和材料决定内建电势；外加偏置会改变势垒和耗尽层宽度。">
-              V_bi = V_T ln(N_A N_D / n_i²)
+              {"V_{bi} = V_T ln(N_A N_D / n_i²)"}
             </Formula>
             <ComparisonTable caption="PN 结偏置对比" headers={["状态", "势垒", "耗尽层", "电流"]} rows={[
               ["正向偏置", "降低", "变窄", "指数增大"],
@@ -165,7 +166,7 @@ export default function DiodeArticle({ email }) {
             <Formula label="稳压管串联限流的基本关系" note="必须同时满足反向击穿工作、电流范围和功耗限制，不能把稳压管直接并到理想电源上。">
               I_Z ≈ (V_S - V_Z) / R_S - I_L
             </Formula>
-            <p>稳压管功耗为 P_Z = V_Z I_Z。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。</p>
+            <p>稳压管功耗为 <FormulaText text="P_Z = V_Z I_Z" />。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。</p>
           </section>
 
           <section id="circuits">
@@ -184,12 +185,12 @@ export default function DiodeArticle({ email }) {
             <p>普通整流二极管适合低频整流；快恢复二极管用较短的反向恢复时间换取更高频率；肖特基没有明显少数载流子存储，正向压降低、反向恢复快，但反向漏电通常更大、耐压选择受限；TVS 专门用于瞬态过压钳位。</p>
             <ComparisonTable caption="常见二极管类型" headers={["类型", "优势", "主要限制", "常见应用"]} rows={[
               ["普通整流", "耐压/电流覆盖广、成本低", "速度慢", "工频整流、电源输入"],
-              ["快恢复", "t_rr 较短", "反向恢复损耗和 EMI", "开关电源、PFC"],
+              ["快恢复", "t_{rr} 较短", "反向恢复损耗和 EMI", "开关电源、PFC"],
               ["肖特基", "V_F 低、几乎无存储恢复", "漏电较大、耐压有限", "低压高频整流"],
               ["TVS", "浪涌时快速钳位", "持续功耗有限", "ESD、接口和电源保护"]
             ]} />
             <Formula label="反向恢复关注点" note="开关频率越高，反向恢复电荷造成的损耗和尖峰越不能忽略。">
-              t_rr，Q_rr，V_RRM，I_F(AV)，P_D
+              {"t_{rr}，Q_{rr}，V_{RRM}，I_F(AV)，P_D"}
             </Formula>
           </section>
 
@@ -198,9 +199,9 @@ export default function DiodeArticle({ email }) {
             <p>遇到计算题优先判断工作区，再选择模型。遇到开放题，按“物理原因—电路表现—工程权衡”三步回答。</p>
             <ol className="summary-list">
               <li>PN 结平衡：扩散与漂移相等；正偏降势垒，反偏升势垒。</li>
-              <li>核心方程：I_D = I_S[exp(V_D/nV_T)-1]，V_T≈26 mV，r_d≈nV_T/I_D。</li>
+              <li><FormulaText text="核心方程：I_D = I_S[exp(V_D/nV_T)-1]，V_T≈26 mV，r_d≈nV_T/I_D。" /></li>
               <li>正偏指数导通，反偏近似截止，超过击穿电压后反向电流急增。</li>
-              <li>反偏主要是势垒电容，正偏主要是扩散电容；高速场景看 t_rr 和 Q_rr。</li>
+              <li><FormulaText text="反偏主要是势垒电容，正偏主要是扩散电容；高速场景看 t_{rr} 和 Q_{rr}。" /></li>
               <li>整流看导通路径，限幅看阈值，稳压看电流范围和功耗。</li>
               <li>温度升高通常使硅二极管正向压降下降、反向漏电上升。</li>
             </ol>

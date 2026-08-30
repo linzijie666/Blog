@@ -1,5 +1,6 @@
 import ArticleFigure from "../ArticleFigure.jsx";
 import ArticleFigureGroup from "../ArticleFigureGroup.jsx";
+import FormulaText from "../FormulaText.jsx";
 import WorkedExample from "../WorkedExample.jsx";
 
 export default function FerriteBeadArticle() {
@@ -8,7 +9,7 @@ export default function FerriteBeadArticle() {
       <section id="principle">
         <h2>磁珠为什么能抑制高频噪声</h2>
         <p>磁珠在直流和低频下阻抗较小，在目标噪声频段呈现较大的损耗性阻抗。它不是单纯把噪声反射回去，而是借助磁性材料损耗把一部分高频能量转化为热。</p>
-        <div className="formula-block"><figcaption>磁珠阻抗组成</figcaption><div className="formula">ZFB(f) = R(f) + jX(f)</div><p>抑制 EMI 时更关注目标频段的阻性分量 R(f)，而不是只看某个频点的总阻抗。</p></div>
+        <div className="formula-block"><figcaption>磁珠阻抗组成</figcaption><div className="formula"><FormulaText text="Z_{FB}(f) = R(f) + jX(f)" /></div><p>抑制 EMI 时更关注目标频段的阻性分量 R(f)，而不是只看某个频点的总阻抗。</p></div>
       </section>
 
       <section id="parameters">

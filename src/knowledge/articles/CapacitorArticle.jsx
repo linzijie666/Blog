@@ -1,5 +1,6 @@
 import ArticleFigure from "../ArticleFigure.jsx";
 import ArticleFigureGroup from "../ArticleFigureGroup.jsx";
+import FormulaText from "../FormulaText.jsx";
 import WorkedExample from "../WorkedExample.jsx";
 
 export default function CapacitorArticle() {
@@ -7,8 +8,8 @@ export default function CapacitorArticle() {
     <>
       <section id="principle">
         <h2>电容的核心关系</h2>
-        <p>电容用电场储能，电压不能突变。电流由电压变化率决定：i = C·du/dt。正弦稳态下 ZC = 1/(jωC)，频率升高时理想容抗减小。</p>
-        <div className="formula-block"><figcaption>储能与容抗</figcaption><div className="formula">E = ½CU²　|ZC| = 1/(2πfC)</div><p>公式给出理想趋势，实际器件还要叠加 ESR、ESL、漏电和介质效应。</p></div>
+        <p>电容用电场储能，电压不能突变。电流由电压变化率决定：i = C·du/dt。正弦稳态下 <FormulaText text="Z_C = 1/(jωC)" />，频率升高时理想容抗减小。</p>
+        <div className="formula-block"><figcaption>储能与容抗</figcaption><div className="formula"><FormulaText text="E = ½CU²　|Z_C| = 1/(2πfC)" /></div><p>公式给出理想趋势，实际器件还要叠加 ESR、ESL、漏电和介质效应。</p></div>
         <aside className="article-callout"><strong>面试主线：</strong>先回答电容在这个位置承担什么功能，再说明需要的容量、频段、电压和非理想参数。</aside>
       </section>
 
@@ -70,7 +71,7 @@ export default function CapacitorArticle() {
       <section id="pdn">
         <h2>并联电容与 PDN</h2>
         <p>PDN 设计的目标是在关心的频段内，把电源网络阻抗压到目标阻抗以下。目标阻抗可用允许纹波除以瞬态电流估算。并联不同容量不是简单的“小电容滤高频、大电容滤低频”，封装、过孔、平面和安装电感会共同塑造阻抗曲线。</p>
-        <div className="formula-block"><figcaption>目标阻抗</figcaption><div className="formula">Z_target = ΔV_allow / ΔI_step</div><p>如果网络某个反谐振峰超过目标阻抗，负载阶跃可能在该频段放大电源噪声。</p></div>
+        <div className="formula-block"><figcaption>目标阻抗</figcaption><div className="formula"><FormulaText text="Z_{target} = ΔV_{allow} / ΔI_{step}" /></div><p>如果网络某个反谐振峰超过目标阻抗，负载阶跃可能在该频段放大电源噪声。</p></div>
         <ArticleFigure src="images/knowledge/passive-components/capacitor-pdn.webp" fullSrc="images/knowledge/passive-components/capacitor-pdn-hd.jpg" alt="并联去耦电容选型表和 PDN 阻抗曲线" caption="并联方案要结合安装电感、ESR 和反谐振，而不是只比较标称容量。" sourcePage="35" />
         <aside className="article-callout"><strong>布局重点：</strong>去耦电流回路面积比“看起来离芯片很近”更重要。电源脚、去耦电容、地之间的路径应短而宽。</aside>
       </section>

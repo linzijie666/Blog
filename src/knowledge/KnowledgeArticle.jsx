@@ -1,12 +1,13 @@
 import ArticleShell from "./ArticleShell.jsx";
+import FormulaText, { formulaPlainText } from "./FormulaText.jsx";
 import { legacyArticle } from "./articles.js";
 
 function Formula({ label, children, note }) {
   return (
     <figure className="formula-block">
       <figcaption>{label}</figcaption>
-      <div className="formula" aria-label={`${label}：${children}`}>
-        {children}
+      <div className="formula" aria-label={`${label}：${formulaPlainText(children)}`}>
+        <FormulaText text={children} />
       </div>
       <p>{note}</p>
     </figure>

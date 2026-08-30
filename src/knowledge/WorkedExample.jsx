@@ -1,6 +1,8 @@
+import FormulaText from "./FormulaText.jsx";
+
 function ReviewList({ items, ordered = false }) {
   const List = ordered ? "ol" : "ul";
-  return <List>{items.map((item) => <li key={item}>{item}</li>)}</List>;
+  return <List>{items.map((item) => <li key={item}><FormulaText text={item} /></li>)}</List>;
 }
 
 export default function WorkedExample({ title, given, calculation, verification, answer }) {
@@ -27,7 +29,7 @@ export default function WorkedExample({ title, given, calculation, verification,
         </div>
         <div>
           <h4>面试回答</h4>
-          <p>{answer}</p>
+          <p><FormulaText text={answer} /></p>
         </div>
       </div>
     </section>

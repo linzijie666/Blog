@@ -291,7 +291,28 @@
   margin-top: 14px;
   color: #ffffff;
   font-size: clamp(20px, 3vw, 30px);
+  line-height: 1.5;
   white-space: nowrap;
+}
+
+.formula sub,
+.formula sup {
+  font-size: 0.62em;
+  line-height: 0;
+  padding: 0 0.06em;
+}
+
+.formula sub {
+  vertical-align: -0.32em;
+}
+
+.formula sup {
+  vertical-align: 0.62em;
+}
+
+.knowledge-article sub,
+.knowledge-article sup {
+  line-height: 0;
 }
 
 .formula-block p {

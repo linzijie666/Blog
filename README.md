@@ -9,16 +9,17 @@
 - **精选项目**：展示 3 个硬件项目，点击卡片可打开项目详情面板。
 - **工程证据**：100W 双向 DC-DC 项目包含实物、效率、振铃、驱动波形、采样原理图和 PCB 等图片。
 - **能力与奖项**：覆盖 PCB、电源拓扑、仪器测量、STM32、通信接口和可靠性测试等方向。
-- **Knowledge 专栏**：按电阻、电容、电感、磁珠四类提供硬件面试复习文章，同时收录二极管秋招速复，并保留电容 / 电感原理旧文作为延伸阅读。
-- **独立文章路由**：使用轻量 Hash 路由，不依赖 React Router；文章支持目录、上一篇 / 下一篇和 PDF 课件下载。
+- **Knowledge 专栏**：分两章组织硬件面试复习文章——第一章无源器件（电阻、电容、电感、磁珠），第二章基础半导体器件（二极管、三极管、光耦、MOS 管），并保留电容 / 电感原理旧文作为延伸阅读。
+- **独立文章路由**：使用轻量 Hash 路由，不依赖 React Router；文章支持目录、上一篇 / 下一篇和分章 PDF 课件下载。
+- **LaTeX 风格公式**：公式使用 `Z_C`、`V_{GS}` 等 LaTeX 子集语法书写，渲染为真正的上下角标。
 
 ## 当前展示内容
 
 - 电子蝴蝶：ESP-01S 物联网呼吸灯装置
 - 100W 双向数字 DC-DC 变换器：STM32G474 / HRTIM / 4 层板 / 双环控制
 - 小智 AI 设计工程：锂电池供电与 TP4056 充电管理
-- 无源器件面试复习：电阻选型、电容与 PDN、功率电感、磁珠与 EMI
-- 二极管秋招速复：PN 结、伏安特性、等效模型、整流、限幅与稳压
+- 第一章无源器件面试复习：电阻选型、电容与 PDN、功率电感、磁珠与 EMI
+- 第二章基础半导体器件复习：二极管速复、三极管开关与放大、光耦 CTR 与线与、MOS 管损耗与 SOA
 - 电路基础延伸阅读：电容与电感的时域关系、频域阻抗、通信电路应用和真实器件边界
 
 ## 技术栈
@@ -35,8 +36,9 @@
 ```text
 .
 ├── public/
-│   ├── downloads/              # 可公开下载的复习课件 PDF
-│   └── images/                 # Hero、项目图片和知识文章配图
+│   ├── downloads/              # 可公开下载的复习课件 PDF（两章各一份）
+│   └── images/                 # Hero、项目图片和知识文章配图（按章分目录）
+├── scripts/                    # 课件页裁切出图脚本（Python + Pillow）
 ├── src/
 │   ├── components/             # 通用动效文本组件
 │   ├── knowledge/              # 知识专栏、文章页和 Hash 路由
@@ -124,20 +126,35 @@ node --test
 
 ### 修改知识专栏
 
-知识专栏首页卡片位于 `src/knowledge/KnowledgeSection.jsx`。文章元数据集中在 `src/knowledge/articles.js`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`，四篇无源器件正文位于 `src/knowledge/articles/`；二极管速复正文位于 `src/knowledge/DiodeArticle.jsx`，旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
+知识专栏按章组织，章定义与文章元数据集中在 `src/knowledge/articles.js`（`knowledgeChapters` + `reviewArticleDefinitions`），专栏首页的分组卡片位于 `src/knowledge/KnowledgeSection.jsx`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`（按章节渲染对应 PDF 下载）。八篇复习文章正文都位于 `src/knowledge/articles/`，并在 `src/knowledge/ReviewArticle.jsx` 中映射；旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
 
 当前文章使用以下 Hash 地址：
 
 ```text
-#/knowledge/resistor
-#/knowledge/capacitor
-#/knowledge/inductor
-#/knowledge/ferrite-bead
-#/knowledge/diode
-#/knowledge/capacitor-inductor
+#/knowledge/resistor            # 第一章 · 电阻
+#/knowledge/capacitor           # 第一章 · 电容
+#/knowledge/inductor            # 第一章 · 电感
+#/knowledge/ferrite-bead        # 第一章 · 磁珠
+#/knowledge/diode               # 第二章 · 二极管
+#/knowledge/triode              # 第二章 · 三极管
+#/knowledge/optocoupler         # 第二章 · 光耦
+#/knowledge/mosfet              # 第二章 · MOS 管
+#/knowledge/capacitor-inductor  # 延伸阅读 · 旧文
 ```
 
-新增文章时，先在 `src/knowledge/articles.js` 注册元数据和章节，再在 `src/knowledge/ReviewArticle.jsx` 绑定正文组件。课件裁切图放在 `public/images/knowledge/passive-components/`，正文使用 WebP，高清查看链接使用对应的 `-hd.jpg` 文件。公开 PDF 位于 `public/downloads/passive-components-review.pdf`。
+新增文章时，先在 `src/knowledge/articles.js` 的对应章节下注册元数据（含 `chapter` 字段），再在 `src/knowledge/ReviewArticle.jsx` 绑定正文组件。课件裁切图按章存放：第一章在 `public/images/knowledge/passive-components/`，第二章在 `public/images/knowledge/semiconductor-devices/`，正文使用 WebP，高清查看链接使用对应的 `-hd.jpg` 文件。公开 PDF 位于 `public/downloads/`：第一章为 `passive-components-review.pdf`（44 页），第二章为 `semiconductor-devices-review.pdf`（60 页）。
+
+课件配图由脚本批量裁切生成：
+
+```bash
+# 第一章（44 页水印 JPG）
+python scripts/build_passive_article_assets.py <第一章JPG目录> public/images/knowledge/passive-components
+
+# 第二章（60 页水印 JPG）
+python scripts/build_semiconductor_article_assets.py <第二章JPG目录> public/images/knowledge/semiconductor-devices
+```
+
+公式使用 `FormulaText` 组件渲染 LaTeX 子集：`_x` / `_{xx}` 生成下角标，`^x` / `^{xx}` 生成上角标，例如 `<FormulaText text="I_{BQ} = (V_{CC} - U_{BEQ})/R_b" />`。注意：花括号语法只能出现在字符串属性或 `{"..."}` 字符串表达式中，直接写在 JSX 子节点里会被当作 JS 表达式导致页面白屏。
 
 ### 替换头像和项目素材
 
@@ -217,8 +234,8 @@ node --test
 - 首页 Hero、海报图和欢迎文案正常显示。
 - `Experience`、`Projects`、`Capabilities`、`Knowledge` 导航可以正常跳转。
 - 三个项目卡片图片正常，项目详情面板可以打开、关闭，并能访问 GitHub / OSHWHub 链接。
-- 四篇无源器件文章、二极管速复及旧文章都能打开，目录、上一篇 / 下一篇和返回专栏入口可用。
-- 专栏顶部和文章页尾可以下载 `passive-components-review.pdf`，正文配图可以打开高清版本。
+- Knowledge 专栏按两章分组展示，八篇复习文章及旧文章都能打开，目录、上一篇 / 下一篇和返回专栏入口可用。
+- 专栏两章的下载按钮分别对应 `passive-components-review.pdf`（44 页）和 `semiconductor-devices-review.pdf`（60 页），文章页尾下载文案与章节一致，正文配图可以打开高清版本。
 - 邮箱链接可以打开邮件客户端。
 - 部署后的图片、CSS、JS 等资源没有 404。
 - 页面刷新后没有空白页，浏览器控制台没有运行时错误。

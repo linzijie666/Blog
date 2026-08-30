@@ -15,12 +15,16 @@ test("the capacitor and inductor article has a stable hash route", () => {
   assert.equal(resolveKnowledgeRoute(ARTICLE_HASH), "capacitor-inductor");
 });
 
-test("the passive component review articles have stable hash routes", () => {
+test("the review articles have stable hash routes", () => {
   assert.deepEqual(ARTICLE_HASHES, {
     resistor: "#/knowledge/resistor",
     capacitor: "#/knowledge/capacitor",
     inductor: "#/knowledge/inductor",
     "ferrite-bead": "#/knowledge/ferrite-bead",
+    diode: "#/knowledge/diode",
+    triode: "#/knowledge/triode",
+    optocoupler: "#/knowledge/optocoupler",
+    mosfet: "#/knowledge/mosfet",
     "capacitor-inductor": "#/knowledge/capacitor-inductor"
   });
 

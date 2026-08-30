@@ -18,7 +18,6 @@ import {
 import TextType from "./components/TextType";
 import ShinyText from "./components/ShinyText";
 import KnowledgeArticle from "./knowledge/KnowledgeArticle.jsx";
-import DiodeArticle from "./knowledge/DiodeArticle.jsx";
 import KnowledgeSection from "./knowledge/KnowledgeSection.jsx";
 import ReviewArticle from "./knowledge/ReviewArticle.jsx";
 import { resolveKnowledgeRoute, scrollToHomeAnchor } from "./knowledge/route.js";
@@ -385,9 +384,6 @@ function App() {
   const knowledgeRoute = resolveKnowledgeRoute(locationHash);
   if (knowledgeRoute === "capacitor-inductor") {
     return <KnowledgeArticle email={email} />;
-  }
-  if (knowledgeRoute === "diode") {
-    return <DiodeArticle email={email} />;
   }
   if (knowledgeRoute) {
     return <ReviewArticle slug={knowledgeRoute} email={email} />;

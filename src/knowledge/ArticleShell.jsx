@@ -3,12 +3,11 @@ import { ArrowLeft, ArrowRight, Download, Mail } from "lucide-react";
 import { getArticleBySlug } from "./articles.js";
 import { resetArticleScroll, scrollToArticleSection } from "./route.js";
 
-const downloadHref = `${import.meta.env.BASE_URL}downloads/passive-components-review.pdf`;
-
 export default function ArticleShell({ article, email, children }) {
   const mainRef = useRef(null);
   const previous = getArticleBySlug(article.previousSlug);
   const next = getArticleBySlug(article.nextSlug);
+  const downloadHref = `${import.meta.env.BASE_URL}${article.download.href}`;
 
   useLayoutEffect(() => {
     const previousTitle = document.title;
@@ -60,7 +59,7 @@ export default function ArticleShell({ article, email, children }) {
             <div>
               <p className="eyebrow">Source Notes</p>
               <h2>继续查看完整图文课件</h2>
-              <p>下载 44 页原始复习资料，文章中的来源页码可与课件对应查阅。</p>
+              <p>下载 {article.download.pages} 页原始复习资料，文章中的来源页码可与课件对应查阅。</p>
               <a className="article-download" href={downloadHref} download>
                 <Download size={18} />下载完整复习课件 PDF
               </a>

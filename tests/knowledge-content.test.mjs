@@ -92,7 +92,7 @@ test("knowledge layouts are responsive and motion-safe", async () => {
   assert.doesNotMatch(css, /min-width:\s*1180px/);
 });
 
-test("the shared article shell owns navigation, metadata and the PDF download", async () => {
+test("the shared article shell owns navigation, metadata and the chapter PDF download", async () => {
   const shell = await read("src/knowledge/ArticleShell.jsx");
 
   assert.match(shell, /article-site-header/);
@@ -100,7 +100,8 @@ test("the shared article shell owns navigation, metadata and the PDF download", 
   assert.match(shell, /上一篇/);
   assert.match(shell, /下一篇/);
   assert.match(shell, /返回知识专栏/);
-  assert.match(shell, /downloads\/passive-components-review\.pdf/);
+  assert.match(shell, /article\.download\.href/);
+  assert.match(shell, /下载 \{article\.download\.pages\} 页原始复习资料/);
   assert.match(shell, /下载完整复习课件/);
   assert.match(shell, /resetArticleScroll/);
 });
@@ -284,29 +285,65 @@ test("the homepage and app expose all review articles while preserving the legac
 
   assert.match(app, /<ReviewArticle slug=\{knowledgeRoute\}/);
   assert.match(app, /knowledgeRoute === "capacitor-inductor"/);
-  assert.match(section, /reviewArticles\.map/);
+  assert.match(section, /reviewArticles\.filter/);
+  assert.match(section, /knowledgeChapters/);
   assert.match(section, /延伸阅读/);
-  assert.match(section, /下载完整课件/);
+  assert.match(section, /下载\{chapter\.index\}完整课件/);
 });
 
-test("the integrated homepage and app preserve the remote diode article", async () => {
-  const [app, section, diode] = await Promise.all([
-    read("src/App.jsx"),
+test("the knowledge column groups articles into two chapters", async () => {
+  const [registry, section, css] = await Promise.all([
+    read("src/knowledge/articles.js"),
     read("src/knowledge/KnowledgeSection.jsx"),
-    read("src/knowledge/DiodeArticle.jsx")
+    read("src/knowledge/knowledge.css")
   ]);
 
-  assert.match(app, /import DiodeArticle/);
-  assert.match(app, /knowledgeRoute === "diode"/);
-  assert.match(app, /<DiodeArticle email=\{email\}/);
-  assert.match(section, /DIODE_ARTICLE_HASH/);
-  assert.match(section, /二极管：从 PN 结到整流、限幅与稳压/);
-  assert.match(diode, /Shockley PN 结电流方程/);
-  assert.match(diode, /反向恢复/);
+  assert.match(registry, /knowledgeChapters/);
+  assert.match(registry, /index: "第一章"/);
+  assert.match(registry, /title: "无源器件"/);
+  assert.match(registry, /index: "第二章"/);
+  assert.match(registry, /title: "基础半导体器件"/);
+  assert.match(section, /chapter\.index/);
+  assert.match(section, /chapter\.title/);
+  assert.match(section, /开始复习/);
+  for (const slug of ["resistor", "capacitor", "inductor", "ferrite-bead", "diode", "triode", "optocoupler", "mosfet"]) {
+    assert.match(section, new RegExp(`["']?${slug}["']?: `));
+  }
+  assert.match(css, /\.knowledge-chapter/);
+  assert.match(css, /\.knowledge-chapter-heading/);
 });
 
-test("the downloadable course PDF is published as a static resource", async () => {
+test("the diode article is organized into the semiconductor chapter", async () => {
+  const [registry, review, route, app] = await Promise.all([
+    read("src/knowledge/articles.js"),
+    read("src/knowledge/ReviewArticle.jsx"),
+    read("src/knowledge/route.js"),
+    read("src/App.jsx")
+  ]);
+
+  assert.match(registry, /slug: "diode"/);
+  assert.match(registry, /二极管：从 PN 结到整流、限幅与稳压/);
+  assert.match(registry, /chapter: "semiconductor"/);
+  assert.match(review, /diode: DiodeArticle/);
+  assert.match(route, /DIODE_ARTICLE_HASH/);
+  assert.match(route, /getArticleBySlug\("diode"\)/);
+  assert.doesNotMatch(route, /if \(hash === DIODE_ARTICLE_HASH\)/);
+  assert.doesNotMatch(app, /knowledgeRoute === "diode"/);
+});
+
+test("the diode article body keeps its long-form content under the shared shell", async () => {
+  const diode = await read("src/knowledge/articles/DiodeArticle.jsx");
+
+  assert.match(diode, /Shockley PN 结电流方程/);
+  assert.match(diode, /反向恢复/);
+  assert.match(diode, /FormulaText/);
+  assert.match(diode, /images\/knowledge\/semiconductor-devices\/diode-rectifier\.webp/);
+  assert.match(diode, /images\/knowledge\/semiconductor-devices\/diode-zener-reference\.webp/);
+});
+
+test("the downloadable course PDFs are published as static resources", async () => {
   await access(new URL("../public/downloads/passive-components-review.pdf", import.meta.url));
+  await access(new URL("../public/downloads/semiconductor-devices-review.pdf", import.meta.url));
 });
 
 test("every referenced article image has a web and high-resolution asset", async () => {
@@ -314,7 +351,11 @@ test("every referenced article image has a web and high-resolution asset", async
     read("src/knowledge/articles/ResistorArticle.jsx"),
     read("src/knowledge/articles/CapacitorArticle.jsx"),
     read("src/knowledge/articles/InductorArticle.jsx"),
-    read("src/knowledge/articles/FerriteBeadArticle.jsx")
+    read("src/knowledge/articles/FerriteBeadArticle.jsx"),
+    read("src/knowledge/articles/DiodeArticle.jsx"),
+    read("src/knowledge/articles/TriodeArticle.jsx"),
+    read("src/knowledge/articles/OptocouplerArticle.jsx"),
+    read("src/knowledge/articles/MosfetArticle.jsx")
   ]);
   const figures = sources.flatMap((source) => [...source.matchAll(/<ArticleFigure\s+([^>]+)\/>/g)]);
 
@@ -355,4 +396,108 @@ test("enhanced passive-component assets exist without publishing full course pag
 
   const publicImages = await readdir(new URL("../public/images/knowledge/passive-components/", import.meta.url));
   assert.equal(publicImages.some((name) => name.startsWith("加水印第一章")), false);
+});
+
+test("enhanced semiconductor assets exist without publishing full course pages", async () => {
+  const semiconductorAssets = [
+    "diode-rectifier",
+    "diode-schottky-anti-reverse",
+    "diode-freewheel-circuits",
+    "diode-zener-reference",
+    "diode-tvs-protection",
+    "bjt-switch-inverter",
+    "bjt-level-shift",
+    "bjt-tl431-reference",
+    "bjt-linear-regulator",
+    "bjt-common-emitter-qpoint",
+    "bjt-small-signal",
+    "bjt-voltage-bias-qpoint",
+    "bjt-bypass-compare",
+    "optocoupler-ctr",
+    "optocoupler-circuits",
+    "oc-od-wired-and",
+    "mos-iic-level-shift",
+    "mos-pmos-soft-start",
+    "mos-vs-bjt-temperature",
+    "mos-soft-start-simulation",
+    "mos-switching-loss",
+    "mos-soa",
+    "mos-soa-selection"
+  ];
+
+  for (const baseName of semiconductorAssets) {
+    await access(new URL(`../public/images/knowledge/semiconductor-devices/${baseName}.webp`, import.meta.url));
+    await access(new URL(`../public/images/knowledge/semiconductor-devices/${baseName}-hd.jpg`, import.meta.url));
+  }
+
+  const publicImages = await readdir(new URL("../public/images/knowledge/semiconductor-devices/", import.meta.url));
+  assert.equal(publicImages.some((name) => name.startsWith("加水印第二章")), false);
+});
+
+test("the expanded triode article covers switching, amplification and working-point calculations", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/TriodeArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of ["饱和", "静态工作点", "微变等效电路", "共射", "共集", "共基", "电平转换", "温度"]) {
+    assert.match(article, new RegExp(topic));
+  }
+  assert.match(article, /title="分压偏置共射电路的静态工作点校核"/);
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  for (const image of [
+    "bjt-switch-inverter",
+    "bjt-level-shift",
+    "bjt-tl431-reference",
+    "bjt-linear-regulator",
+    "bjt-common-emitter-qpoint",
+    "bjt-small-signal",
+    "bjt-voltage-bias-qpoint",
+    "bjt-bypass-compare"
+  ]) {
+    assert.match(article, new RegExp(image));
+  }
+  assert.match(registry, /slug: "triode"[\s\S]*?readingTime: "约 18 分钟"/);
+});
+
+test("the expanded optocoupler article covers CTR, circuit design and wired-AND logic", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/OptocouplerArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of ["CTR", "隔离", "限流", "上拉", "OC 门", "OD 门", "线与", "IIC"]) {
+    assert.match(article, new RegExp(topic));
+  }
+  assert.match(article, /title="3.3V GPIO 隔离驱动 12V 输出的光耦校核"/);
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  for (const image of ["optocoupler-ctr", "optocoupler-circuits", "oc-od-wired-and"]) {
+    assert.match(article, new RegExp(image));
+  }
+  assert.match(registry, /slug: "optocoupler"[\s\S]*?readingTime: "约 12 分钟"/);
+});
+
+test("the expanded mosfet article covers functions, losses, parallel use and SOA", async () => {
+  const [article, registry] = await Promise.all([
+    read("src/knowledge/articles/MosfetArticle.jsx"),
+    read("src/knowledge/articles.js")
+  ]);
+
+  for (const topic of ["RDS", "缓启动", "并联", "损耗", "SOA", "电平转换", "开关电源", "结温"]) {
+    assert.match(article, new RegExp(topic));
+  }
+  assert.match(article, /title="Buck 功率级 MOS 管损耗校核"/);
+  assert.equal((article.match(/<WorkedExample/g) ?? []).length, 1);
+  for (const image of [
+    "mos-iic-level-shift",
+    "mos-pmos-soft-start",
+    "mos-vs-bjt-temperature",
+    "mos-soft-start-simulation",
+    "mos-switching-loss",
+    "mos-soa",
+    "mos-soa-selection"
+  ]) {
+    assert.match(article, new RegExp(image));
+  }
+  assert.match(registry, /slug: "mosfet"[\s\S]*?readingTime: "约 20 分钟"/);
 });

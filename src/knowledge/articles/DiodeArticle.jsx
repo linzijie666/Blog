@@ -1,19 +1,6 @@
-import { useLayoutEffect, useRef } from "react";
-import { ArrowLeft, Mail } from "lucide-react";
-import FormulaText, { formulaPlainText } from "./FormulaText.jsx";
-import { DIODE_ARTICLE_HASH, resetArticleScroll, scrollToArticleSection } from "./route.js";
-
-const sections = [
-  ["semiconductor", "先把半导体方向理清"],
-  ["pn-junction", "PN 结如何形成"],
-  ["iv-curve", "伏安特性与电流方程"],
-  ["models", "等效模型与小信号"],
-  ["capacitance", "PN 结的电容效应"],
-  ["breakdown", "击穿与稳压"],
-  ["circuits", "典型电路与题型"],
-  ["dynamic", "动态参数与器件选型"],
-  ["interview", "秋招高频题与一页速记"]
-];
+import ArticleFigure from "../ArticleFigure.jsx";
+import ArticleFigureGroup from "../ArticleFigureGroup.jsx";
+import FormulaText, { formulaPlainText } from "../FormulaText.jsx";
 
 function Formula({ label, children, note }) {
   return (
@@ -52,47 +39,9 @@ function ComparisonTable({ caption, headers, rows }) {
   );
 }
 
-export default function DiodeArticle({ email }) {
-  const mainRef = useRef(null);
-
-  useLayoutEffect(() => {
-    const previousTitle = document.title;
-    document.title = "二极管秋招速复：从 PN 结到整流、限幅与稳压 | LzjEngineer";
-    resetArticleScroll();
-    mainRef.current?.focus({ preventScroll: true });
-    return () => { document.title = previousTitle; };
-  }, []);
-
+export default function DiodeArticle() {
   return (
-    <div className="article-page diode-article-page">
-      <header className="article-site-header">
-        <a className="brand" href="./#hero" aria-label="返回博客首页">
-          <span className="brand-mark">LZJ</span>
-          <span><strong>LzjEngineer</strong><small>Knowledge Notes</small></span>
-        </a>
-        <a className="header-contact" href={`mailto:${email}`}><Mail size={17} />Contact</a>
-      </header>
-
-      <main className="article-layout" ref={mainRef} tabIndex="-1">
-        <article className="knowledge-article">
-          <header className="article-hero">
-            <a className="article-back" href="./#knowledge"><ArrowLeft size={18} />返回知识专栏</a>
-            <p className="eyebrow">模拟电子技术 / 秋招速复 / 约 30 至 45 分钟</p>
-            <h1>二极管：从 PN 结到整流、限幅与稳压</h1>
-            <p className="article-lead">
-              用一条主线串起“载流子运动 → 伏安方程 → 等效模型 → 典型电路”。先理解 PN 结，再用模型解决面试和笔试题。
-            </p>
-          </header>
-
-          <nav className="article-toc" aria-label="文章目录">
-            {sections.map(([id, title]) => (
-              <a href={DIODE_ARTICLE_HASH} key={id} onClick={(event) => {
-                event.preventDefault();
-                scrollToArticleSection(id);
-              }}>{title}</a>
-            ))}
-          </nav>
-
+    <>
           <section id="semiconductor">
             <h2>先把半导体方向理清</h2>
             <p>
@@ -166,17 +115,24 @@ export default function DiodeArticle({ email }) {
             <Formula label="稳压管串联限流的基本关系" note="必须同时满足反向击穿工作、电流范围和功耗限制，不能把稳压管直接并到理想电源上。">
               I_Z ≈ (V_S - V_Z) / R_S - I_L
             </Formula>
-            <p>稳压管功耗为 <FormulaText text="P_Z = V_Z I_Z" />。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。</p>
+            <p>稳压管功耗为 <FormulaText text="P_Z = V_Z I_Z" />。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。例如 SOD-123 封装的 BZT52C2V0 稳压管，V_Z 为 2.0 V、I_ZT 为 5 mA、最大功耗 500 mW；用它产生 5.1 V 参考电压时，限流电阻上限由稳压电流决定、下限由功耗决定，只能得到几十毫安级的参考电流。</p>
+            <ArticleFigure src="images/knowledge/semiconductor-devices/diode-zener-reference.webp" fullSrc="images/knowledge/semiconductor-devices/diode-zener-reference-hd.jpg" alt="稳压二极管 BZT52C2V0 参数表与限流电阻计算" caption="稳压管参考源的关键是限流电阻：太小烧毁器件，太大稳压失效，只能提供参考电流。" sourcePage="9" />
           </section>
 
           <section id="circuits">
             <h2>典型电路与题型</h2>
             <div className="application-list">
-              <article><h3>整流</h3><p>半波整流只保留一个半周；桥式全波整流每个半周都有电流，平均输出更高，但电流路径通常经过两只二极管。电容滤波会提高平均值、降低纹波。</p></article>
-              <article><h3>限幅</h3><p>利用二极管在某一极性下导通，把输出限制在参考电压附近。先假设导通状态，再用 KVL/KCL 验证假设是否自洽。</p></article>
-              <article><h3>钳位与检波</h3><p>钳位电路改变直流基准而尽量保留波形形状；峰值检波利用二极管给电容充电，再由负载缓慢放电提取包络。</p></article>
+              <article><h3>整流</h3><p>半波整流只保留一个半周；桥式全波整流每个半周都有电流，平均输出更高，但电流路径通常经过两只二极管。关注反向耐压 V<sub>RRM</sub> 和平均整流电流 I<sub>(AV)</sub>，例如 1N4007 反向耐压 1000 V、整流电流 1 A。</p></article>
+              <article><h3>续流与单向导电</h3><p>非同步 BUCK 的续流管、BOOST 的单向导通管都用二极管；开关频率高、电流大时选压降低的肖特基，例如 B550A。</p></article>
+              <article><h3>防反接</h3><p>电源入口串联肖特基利用单向导电性防止正负接反，双电源常用两只二极管做或逻辑供电，代价是约 0.5 V 压降和导通损耗。</p></article>
+              <article><h3>限幅与钳位</h3><p>利用二极管在某一极性下导通，把输出限制在参考电压附近。先假设导通状态，再用 KVL/KCL 验证假设是否自洽。</p></article>
               <article><h3>稳压</h3><p>稳压管反向击穿并联在负载两端，串联电阻承担输入与稳压值的压差。输入变化和负载变化都要落在允许电流区间内。</p></article>
             </div>
+            <ArticleFigureGroup figures={[
+              { src: "images/knowledge/semiconductor-devices/diode-rectifier.webp", fullSrc: "images/knowledge/semiconductor-devices/diode-rectifier-hd.jpg", alt: "1N4007 整流二极管参数表与反激电源整流电路", caption: "整流电路关注反向耐压与平均整流电流，AC-DC 入口的整流桥按 220V 峰值电压选耐压。", sourcePage: "4" },
+              { src: "images/knowledge/semiconductor-devices/diode-freewheel-circuits.webp", fullSrc: "images/knowledge/semiconductor-devices/diode-freewheel-circuits-hd.jpg", alt: "BUCK 续流二极管与 BOOST LED 驱动单向导电电路", caption: "非同步 BUCK 的续流管和 BOOST 的单向导电管都依赖二极管的单边导通特性。", sourcePage: "6" }
+            ]} />
+            <ArticleFigure src="images/knowledge/semiconductor-devices/diode-schottky-anti-reverse.webp" fullSrc="images/knowledge/semiconductor-devices/diode-schottky-anti-reverse-hd.jpg" alt="肖特基二极管参数表与双电源防反接供电电路" caption="USB 与适配器双电源经两只肖特基或逻辑供电，同时实现防反接，压降约 0.5V。" sourcePage="5" />
             <aside className="article-callout"><strong>通用解题流程：</strong>标出阳极/阴极 → 假设每只管导通或截止 → 用对应模型列方程 → 求出电压/电流 → 检查导通条件与反向耐压。</aside>
           </section>
 
@@ -192,6 +148,9 @@ export default function DiodeArticle({ email }) {
             <Formula label="反向恢复关注点" note="开关频率越高，反向恢复电荷造成的损耗和尖峰越不能忽略。">
               {"t_{rr}，Q_{rr}，V_{RRM}，I_F(AV)，P_D"}
             </Formula>
+            <ArticleFigureGroup figures={[
+              { src: "images/knowledge/semiconductor-devices/diode-tvs-protection.webp", fullSrc: "images/knowledge/semiconductor-devices/diode-tvs-protection-hd.jpg", alt: "电源入口 TVS 与 PPTC 过流防护电路", caption: "电源入口 TVS 平时近似开路，选型关注反向击穿电压、钳位电压和功率等级。", sourcePage: "12" }
+            ]} />
           </section>
 
           <section id="interview">
@@ -207,8 +166,6 @@ export default function DiodeArticle({ email }) {
             </ol>
             <aside className="article-callout"><strong>最后自测：</strong>能否解释“为什么桥式整流每个半周有两只管导通”？能否由 2 mA 工作电流估算小信号电阻？能否说明肖特基为何适合低压高频整流？</aside>
           </section>
-        </article>
-      </main>
-    </div>
+    </>
   );
 }

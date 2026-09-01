@@ -1,4 +1,4 @@
-import { Activity, ArrowUpRight, BookOpen, CircuitBoard, Download, Lightbulb, Magnet, Radio, ToggleLeft, Waves, Zap } from "lucide-react";
+import { Activity, ArrowLeftRight, ArrowUpRight, Binary, BookOpen, CircuitBoard, Clock, Crosshair, Cpu, Download, Eye, Globe, Lightbulb, Magnet, MemoryStick, Milestone, Monitor, MoveHorizontal, Network, PlugZap, Power, Radio, RadioTower, Route, ScanLine, Signal, Timer, TimerReset, ToggleLeft, Triangle, Waves, Workflow, Blend, Layers, Waypoints, Ruler, Gauge, Cable, AudioLines, Zap, BatteryCharging } from "lucide-react";
 import { knowledgeChapters, legacyArticle, reviewArticles } from "./articles.js";
 
 const articleIcons = {
@@ -9,7 +9,37 @@ const articleIcons = {
   diode: Zap,
   triode: Activity,
   optocoupler: Lightbulb,
-  mosfet: ToggleLeft
+  mosfet: ToggleLeft,
+  "switching-regulator": PlugZap,
+  "linear-regulator": BatteryCharging,
+  mcu: Cpu,
+  fpga: Binary,
+  ddr: MemoryStick,
+  "reset-watchdog": TimerReset,
+  "pcb-routing": Route,
+  "pcb-decoupling": Clock,
+  "pcb-copper-pour": Blend,
+  "pcb-ground-design": Layers,
+  "pcb-high-speed": Waypoints,
+  "pcb-fab-hdi": Ruler,
+  "pcb-power-layout": Gauge,
+  "opamp-basics": Triangle,
+  "opamp-circuits": Workflow,
+  "opamp-apps": Cable,
+  "adc-primer": AudioLines,
+  "vref-precision": Crosshair,
+  "iic-spi": Network,
+  "setup-hold-time": Timer,
+  "rs232-rs485": RadioTower,
+  lvds: ArrowLeftRight,
+  "gigabit-ethernet": Globe,
+  "hdmi-pcie-usb": Monitor,
+  "pi-pdn": Power,
+  "transmission-line-termination": Signal,
+  "si-measurement": ScanLine,
+  "length-matching": MoveHorizontal,
+  "si-routing": Milestone,
+  "eye-diagram-jitter": Eye
 };
 
 export default function KnowledgeSection() {
@@ -22,7 +52,7 @@ export default function KnowledgeSection() {
             <h2>把器件的参数表，变成可回答的工程问题。</h2>
           </div>
           <div className="knowledge-heading-copy">
-            <p>面向硬件面试复习，分两章整理无源器件与基础半导体器件的原理、参数、典型电路、选型流程与易错点。</p>
+            <p>面向硬件面试复习，分八章整理无源器件、基础半导体器件、电源类、主控芯片、PCB Layout、模拟器件、高速接口与 SI/PI 的原理、参数、设计规则、典型电路与易错点。</p>
           </div>
         </div>
 

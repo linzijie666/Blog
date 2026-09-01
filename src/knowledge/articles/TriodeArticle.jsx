@@ -33,7 +33,7 @@ export default function TriodeArticle() {
         <div className="formula-block"><figcaption>固定偏置共射电路的静态工作点</figcaption><div className="formula"><FormulaText text="I_{BQ} = (V_{CC} - U_{BEQ})/R_b = (12-0.7)/200K = 56.5µA" /></div><p><FormulaText text="I_{EQ} = (1+β)·I_{BQ} = 5.71mA" />，集电极电流 <FormulaText text="I_{CQ} = β·I_{BQ}" />。U_BEQ 对硅管取 0.7V 固定值。</p></div>
         <ArticleFigure src="images/knowledge/semiconductor-devices/bjt-common-emitter-qpoint.webp" fullSrc="images/knowledge/semiconductor-devices/bjt-common-emitter-qpoint-hd.jpg" alt="共射放大电路与静态工作点计算过程" caption="先算 IBQ、再算 IEQ 和 ICQ：静态分析只看直流通路，耦合电容全部断开。" sourcePage="20" />
         <p>动态参数从微变等效电路出发，先算三极管输入电阻，再按定义求放大倍数、输入电阻和输出电阻。</p>
-        <div className="formula-block"><figcaption>三极管输入电阻</figcaption><div className="formula"><FormulaText text="r_{be} = r_{bb'} + (1+β)·U_T/I_{EQ} ≈ 757Ω" /></div><p>rbb' 基区体电阻典型取 300Ω，UT 为热电压 26mV；IEQ 越大 rbe 越小，这是增益与输入阻抗的折中来源。</p></div>
+        <div className="formula-block"><figcaption>三极管输入电阻</figcaption><div className="formula"><FormulaText text="r_{be} = r_{bb'} + (1+β)·U_T/I_{EQ} ≈757Ω" /></div><p>rbb' 基区体电阻典型取 300Ω，UT 为热电压 26mV；IEQ 越大 rbe 越小，这是增益与输入阻抗的折中来源。</p></div>
         <ArticleFigure src="images/knowledge/semiconductor-devices/bjt-small-signal.webp" fullSrc="images/knowledge/semiconductor-devices/bjt-small-signal-hd.jpg" alt="射极跟随器微变等效电路与增益输入输出电阻推导" caption="射极跟随器 Au≈0.98、输入电阻大、输出电阻小，常做输入级、缓冲级和输出级。" sourcePage="24" />
         <WorkedExample
           title="分压偏置共射电路的静态工作点校核"

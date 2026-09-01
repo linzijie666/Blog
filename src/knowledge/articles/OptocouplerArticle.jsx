@@ -41,7 +41,7 @@ export default function OptocouplerArticle() {
 
       <section id="circuits">
         <h2>光耦电路设计</h2>
-        <p><strong>输入侧限流：</strong>LED 与普通二极管一样需要限流电阻。已知单片机 3.3V 输出、LED 压降 UF=1.25V、目标工作点 IF=2mA，则 <FormulaText text="R_{IN} = (3.3V - 1.25V)/2mA ≈ 1KΩ" />。</p>
+        <p><strong>输入侧限流：</strong>LED 与普通二极管一样需要限流电阻。已知单片机 3.3V 输出、LED 压降 UF=1.25V、目标工作点 IF=2mA，则 <FormulaText text="R_{IN} = (3.3V - 1.25V)/2mA ≈ 1kΩ" />。</p>
         <p><strong>输出侧上拉：</strong>输出三极管相当于受光控制的开关，集电极经上拉电阻接到目标电压域。上拉电阻有下限：输出电流不能超过 <FormulaText text="I_C = I_F·CTR" /> 的能力；取值大一些可以降低静态功耗，但会拖慢上升沿（上拉电阻与负载电容构成 RC）。</p>
         <p>实际应用还要加输出 TVS 防护和输入防反二极管——光耦正向耐压可达几十伏，反向耐压只有几伏，反接会损坏输入侧 LED。注意这个典型电路输出逻辑是反相的：GPIO 高电平→LED 亮→三极管导通→输出被拉低。</p>
         <ArticleFigure src="images/knowledge/semiconductor-devices/optocoupler-circuits.webp" fullSrc="images/knowledge/semiconductor-devices/optocoupler-circuits-hd.jpg" alt="光耦输入限流与输出上拉完整电路设计" caption="输入按 IF 工作点算限流电阻，输出按 IF·CTR 校核上拉电阻下限，输出逻辑取反。" sourcePage="33" />

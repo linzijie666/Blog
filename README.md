@@ -9,7 +9,7 @@
 - **精选项目**：展示 3 个硬件项目，点击卡片可打开项目详情面板。
 - **工程证据**：100W 双向 DC-DC 项目包含实物、效率、振铃、驱动波形、采样原理图和 PCB 等图片。
 - **能力与奖项**：覆盖 PCB、电源拓扑、仪器测量、STM32、通信接口和可靠性测试等方向。
-- **Knowledge 专栏**：分两章组织硬件面试复习文章——第一章无源器件（电阻、电容、电感、磁珠），第二章基础半导体器件（二极管、三极管、光耦、MOS 管），并保留电容 / 电感原理旧文作为延伸阅读。
+- **Knowledge 专栏**：分八章组织硬件面试复习文章——前六章覆盖无源器件、基础半导体器件、电源、主控芯片、PCB Layout 与模拟器件，第七章整理 IIC/SPI、RS232/RS485、LVDS、千兆网和 HDMI/PCIE/USB，第八章整理 PDN、传输线、SI 测量、等长、传输路径与眼图，并保留电容 / 电感原理旧文作为延伸阅读。
 - **独立文章路由**：使用轻量 Hash 路由，不依赖 React Router；文章支持目录、上一篇 / 下一篇和分章 PDF 课件下载。
 - **LaTeX 风格公式**：公式使用 `Z_C`、`V_{GS}` 等 LaTeX 子集语法书写，渲染为真正的上下角标。
 
@@ -20,6 +20,12 @@
 - 小智 AI 设计工程：锂电池供电与 TP4056 充电管理
 - 第一章无源器件面试复习：电阻选型、电容与 PDN、功率电感、磁珠与 EMI
 - 第二章基础半导体器件复习：二极管速复、三极管开关与放大、光耦 CTR 与线与、MOS 管损耗与 SOA
+- 第三章电源类复习：DC-DC 设计流程与 BUCK/BOOST 拓扑、伏秒平衡、上电时序、纹波噪声抑制、LDO 原理与电源树
+- 第四章主控芯片复习：STM32 最小系统与晶振、FPGA 上电时序与配置加载、DDR 容量与等长设计、复位与看门狗
+- 第五章 PCB Layout 复习：3W 与参考平面、去耦半径与时钟走线、铺铜包地与隔离挖空、接地与 20H、绕等长与阻抗、加工工艺与 HDI、开关电源布局与通流
+- 第六章模拟器件复习：运放虚短虚断与参数选型、基本运算电路、恒流源与 ADC/DAC 接口、ADC 架构与选型、精度设计与基准源
+- 第七章高速接口复习：IIC/SPI、建立保持时间、RS232/RS485、LVDS、千兆网、HDMI/PCIE/USB
+- 第八章 SI&PI 复习：PDN、传输线与端接、VNA/TDR、等时设计、高速传输路径、眼图与均衡
 - 电路基础延伸阅读：电容与电感的时域关系、频域阻抗、通信电路应用和真实器件边界
 
 ## 技术栈
@@ -36,7 +42,7 @@
 ```text
 .
 ├── public/
-│   ├── downloads/              # 可公开下载的复习课件 PDF（两章各一份）
+│   ├── downloads/              # 可公开下载的复习课件 PDF（八章各一份）
 │   └── images/                 # Hero、项目图片和知识文章配图（按章分目录）
 ├── scripts/                    # 课件页裁切出图脚本（Python + Pillow）
 ├── src/
@@ -126,7 +132,7 @@ node --test
 
 ### 修改知识专栏
 
-知识专栏按章组织，章定义与文章元数据集中在 `src/knowledge/articles.js`（`knowledgeChapters` + `reviewArticleDefinitions`），专栏首页的分组卡片位于 `src/knowledge/KnowledgeSection.jsx`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`（按章节渲染对应 PDF 下载）。八篇复习文章正文都位于 `src/knowledge/articles/`，并在 `src/knowledge/ReviewArticle.jsx` 中映射；旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
+知识专栏按章组织，章定义与文章元数据集中在 `src/knowledge/articles.js`（`knowledgeChapters` + `reviewArticleDefinitions`），专栏首页的分组卡片位于 `src/knowledge/KnowledgeSection.jsx`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`（按章节渲染对应 PDF 下载）。三十八篇复习文章正文都位于 `src/knowledge/articles/`，并在 `src/knowledge/ReviewArticle.jsx` 中映射；旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
 
 当前文章使用以下 Hash 地址：
 
@@ -139,10 +145,40 @@ node --test
 #/knowledge/triode              # 第二章 · 三极管
 #/knowledge/optocoupler         # 第二章 · 光耦
 #/knowledge/mosfet              # 第二章 · MOS 管
+#/knowledge/switching-regulator # 第三章 · 开关电源
+#/knowledge/linear-regulator    # 第三章 · 线性稳压源
+#/knowledge/mcu                 # 第四章 · 单片机
+#/knowledge/fpga                # 第四章 · FPGA
+#/knowledge/ddr                 # 第四章 · DDR
+#/knowledge/reset-watchdog      # 第四章 · 复位与看门狗
+#/knowledge/pcb-routing         # 第五章 · 走线规则
+#/knowledge/pcb-decoupling      # 第五章 · 去耦与时钟
+#/knowledge/pcb-copper-pour     # 第五章 · 铺铜与包地
+#/knowledge/pcb-ground-design   # 第五章 · 接地设计
+#/knowledge/pcb-high-speed      # 第五章 · 高速设计
+#/knowledge/pcb-fab-hdi         # 第五章 · 加工工艺与板型
+#/knowledge/pcb-power-layout    # 第五章 · 电源 Layout 与通流
+#/knowledge/opamp-basics        # 第六章 · 运放基础
+#/knowledge/opamp-circuits      # 第六章 · 运算电路
+#/knowledge/opamp-apps          # 第六章 · 运放应用
+#/knowledge/adc-primer          # 第六章 · ADC
+#/knowledge/vref-precision      # 第六章 · 精度设计与基准源
+#/knowledge/iic-spi             # 第七章 · IIC 与 SPI
+#/knowledge/setup-hold-time     # 第七章 · 建立保持时间
+#/knowledge/rs232-rs485         # 第七章 · RS232 与 RS485
+#/knowledge/lvds                # 第七章 · LVDS
+#/knowledge/gigabit-ethernet    # 第七章 · 千兆网
+#/knowledge/hdmi-pcie-usb       # 第七章 · HDMI / PCIE / USB
+#/knowledge/pi-pdn              # 第八章 · PI 与 PDN
+#/knowledge/transmission-line-termination # 第八章 · 传输线与端接
+#/knowledge/si-measurement      # 第八章 · SI 测量
+#/knowledge/length-matching     # 第八章 · 等长设计
+#/knowledge/si-routing          # 第八章 · 高速传输路径
+#/knowledge/eye-diagram-jitter  # 第八章 · 眼图与均衡
 #/knowledge/capacitor-inductor  # 延伸阅读 · 旧文
 ```
 
-新增文章时，先在 `src/knowledge/articles.js` 的对应章节下注册元数据（含 `chapter` 字段），再在 `src/knowledge/ReviewArticle.jsx` 绑定正文组件。课件裁切图按章存放：第一章在 `public/images/knowledge/passive-components/`，第二章在 `public/images/knowledge/semiconductor-devices/`，正文使用 WebP，高清查看链接使用对应的 `-hd.jpg` 文件。公开 PDF 位于 `public/downloads/`：第一章为 `passive-components-review.pdf`（44 页），第二章为 `semiconductor-devices-review.pdf`（60 页）。
+新增文章时，先在 `src/knowledge/articles.js` 的对应章节下注册元数据（含 `chapter` 字段），再在 `src/knowledge/ReviewArticle.jsx` 绑定正文组件。课件裁切图按章存放于 `public/images/knowledge/` 下的 `passive-components/`、`semiconductor-devices/`、`power-supplies/`、`digital-chips/`、`pcb-layout/`、`analog-devices/`、`high-speed-interfaces/` 和 `si-pi/`；正文使用 WebP，高清查看链接使用对应的 `-hd.jpg`。公开 PDF 位于 `public/downloads/`，第七章 `high-speed-interfaces-review.pdf` 为 66 页，第八章 `si-pi-review.pdf` 为 98 页。
 
 课件配图由脚本批量裁切生成：
 
@@ -152,6 +188,24 @@ python scripts/build_passive_article_assets.py <第一章JPG目录> public/image
 
 # 第二章（60 页水印 JPG）
 python scripts/build_semiconductor_article_assets.py <第二章JPG目录> public/images/knowledge/semiconductor-devices
+
+# 第三章（56 页水印 JPG）
+python scripts/build_power_article_assets.py <第三章JPG目录> public/images/knowledge/power-supplies
+
+# 第四章（66 页水印 JPG）
+python scripts/build_digital_article_assets.py <第四章JPG目录> public/images/knowledge/digital-chips
+
+# 第五章（32 页水印 JPG）
+python scripts/build_pcb_layout_article_assets.py <第五章JPG目录> public/images/knowledge/pcb-layout
+
+# 第六章（51 页水印 JPG）
+python scripts/build_analog_article_assets.py <第六章JPG目录> public/images/knowledge/analog-devices
+
+# 第七章（66 页水印 JPG）
+python scripts/build_high_speed_interface_article_assets.py <第七章JPG目录> public/images/knowledge/high-speed-interfaces
+
+# 第八章（98 页水印 JPG；源路径中的双空格必须保留）
+python scripts/build_si_pi_article_assets.py "<第八章  双空格 JPG目录>" public/images/knowledge/si-pi
 ```
 
 公式使用 `FormulaText` 组件渲染 LaTeX 子集：`_x` / `_{xx}` 生成下角标，`^x` / `^{xx}` 生成上角标，例如 `<FormulaText text="I_{BQ} = (V_{CC} - U_{BEQ})/R_b" />`。注意：花括号语法只能出现在字符串属性或 `{"..."}` 字符串表达式中，直接写在 JSX 子节点里会被当作 JS 表达式导致页面白屏。
@@ -234,8 +288,8 @@ node --test
 - 首页 Hero、海报图和欢迎文案正常显示。
 - `Experience`、`Projects`、`Capabilities`、`Knowledge` 导航可以正常跳转。
 - 三个项目卡片图片正常，项目详情面板可以打开、关闭，并能访问 GitHub / OSHWHub 链接。
-- Knowledge 专栏按两章分组展示，八篇复习文章及旧文章都能打开，目录、上一篇 / 下一篇和返回专栏入口可用。
-- 专栏两章的下载按钮分别对应 `passive-components-review.pdf`（44 页）和 `semiconductor-devices-review.pdf`（60 页），文章页尾下载文案与章节一致，正文配图可以打开高清版本。
+- Knowledge 专栏按八章分组展示，三十八篇复习文章及旧文章都能打开，目录、上一篇 / 下一篇和返回专栏入口可用。
+- 专栏八章的下载按钮对应 8 份课件，其中第七章 `high-speed-interfaces-review.pdf` 为 66 页、第八章 `si-pi-review.pdf` 为 98 页；文章页尾下载文案与章节一致，正文配图可以打开高清版本。
 - 邮箱链接可以打开邮件客户端。
 - 部署后的图片、CSS、JS 等资源没有 404。
 - 页面刷新后没有空白页，浏览器控制台没有运行时错误。

@@ -1,6 +1,10 @@
 import { articleRegistry, getArticleBySlug, legacyArticle } from "./articles.js";
 
 export const ARTICLE_HASH = legacyArticle.hash;
+export const KNOWLEDGE_INDEX_HASH = "#/knowledge";
+export function isKnowledgeIndexRoute(hash) {
+  return hash === KNOWLEDGE_INDEX_HASH;
+}
 export const DIODE_ARTICLE_HASH = getArticleBySlug("diode")?.hash ?? "#/knowledge/diode";
 export const ARTICLE_HASHES = Object.fromEntries(
   articleRegistry.map((article) => [article.slug, article.hash])

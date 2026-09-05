@@ -32,7 +32,7 @@ export default function ArticleShell({ article, email, children }) {
       <main className="article-layout" ref={mainRef} tabIndex="-1">
         <article className="knowledge-article">
           <header className="article-hero">
-            <a className="article-back" href="./#knowledge"><ArrowLeft size={18} />返回知识专栏</a>
+            <a className="article-back" href="#/knowledge"><ArrowLeft size={18} />返回知识专栏</a>
             <p className="eyebrow">{article.category} / {article.readingTime}</p>
             <h1>{article.title}</h1>
             <p className="article-lead">{article.summary}</p>

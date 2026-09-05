@@ -41,7 +41,7 @@ export default function ResetWatchdogArticle() {
       <section id="watchdog">
         <h2>看门狗原理与电路设计</h2>
         <p>看门狗（Watchdog Timer, WDT）解决的问题是：<strong>程序跑飞、死循环或时钟失效时，系统自己不知道，需要独立的电路强制复位</strong>。工作方式是反向的——主控必须周期性“喂狗”（在 WDI 引脚上产生电平翻转或脉冲）；如果超时时间 tWD 内没有喂狗信号，看门狗输出复位脉冲（脉宽 tWP，典型 140~200ms）复位主控。</p>
-        <p>两类实现：主控<strong>片内看门狗</strong>（如 STM32 独立看门狗 IWDG 走 LSI 时钟、窗口看门狗 WWDG 要求“不能太早也不能太晚”喂狗）和<strong>外置看门狗芯片</strong>。外置方案的优势是完全独立于主芯片：主控晶振停振、时钟树跑飞时片内看门狗可能同时失效，外置芯片依然能拉复位线；而且通常集成了电压监测复位和手动复位输入（MR#）。</p>
+        <p>两类实现：主控<strong>片内看门狗</strong>和<strong>外置看门狗芯片</strong>。STM32F103 的 IWDG 使用独立 LSI，因此主晶振停振时仍可工作；WWDG 则来自主时钟域并要求在规定窗口内喂狗。外置方案的价值是进一步独立故障域，并可集成电压监测复位和手动复位输入（MR#），而不是笼统认为所有片内看门狗都与主晶振同失效。</p>
         <ArticleFigureGroup figures={[
           { src: "images/knowledge/digital-chips/watchdog-tpv6823-app.webp", fullSrc: "images/knowledge/digital-chips/watchdog-tpv6823-app-hd.jpg", alt: "TPV6823 典型应用框图", caption: "TPV6823 与主控：RESET→复位主控、主控 IO→WDI 喂狗、MR# 手动复位，双向箭头标出信号方向。", sourcePage: "54" },
           { src: "images/knowledge/digital-chips/watchdog-timing.webp", fullSrc: "images/knowledge/digital-chips/watchdog-timing-hd.jpg", alt: "看门狗时序图", caption: "Figure 11 Watchdog Timing：VCC 越过 VTH 复位释放，WDI 停喂超过 tWD 触发 tWP 复位脉冲。", sourcePage: "55" }
@@ -72,7 +72,7 @@ export default function ResetWatchdogArticle() {
           <details><summary>RC 复位和专用复位芯片怎么选？</summary><p>RC 成本低适合电源简单的小系统，但无法判断电源质量；专用芯片（MAX809 等）阈值精确、带约 140ms 复位延时，能应对电压跌落，3.3V 系统选 2.93V 阈值档，要求高的系统必用。</p></details>
           <details><summary>多芯片系统的复位怎么组织？</summary><p>级联：上电复位芯片 → MCU → FPGA → DDR/传感器/PHY，从主到从依次释放；跨电压域加电平转换；配合电源 PG 信号保证所有电源就绪后才释放复位。</p></details>
           <details><summary>看门狗的工作原理是什么？</summary><p>主控周期性在 WDI 上产生翻转信号（喂狗），看门狗在超时时间 tWD 内收不到喂狗就输出复位脉冲 tWP。它构成“主控失能 → 自动复位”的兜底保护。</p></details>
-          <details><summary>为什么高可靠系统要外置看门狗？</summary><p>片内看门狗与主控共用时钟和电源，主控晶振停振或内核电源异常时可能同时失效；外置芯片独立供电、还带电压监测和手动复位输入，能覆盖片内方案管不到的故障。</p></details>
+          <details><summary>为什么高可靠系统仍可能使用外置看门狗？</summary><p>STM32F103 的 IWDG 由独立 LSI 驱动，能覆盖主晶振停振；外置看门狗的优势是与 MCU 的时钟、逻辑和部分电源故障进一步隔离，并可附带电压监控、独立复位输出和手动复位。</p></details>
           <details><summary>喂狗有什么讲究？</summary><p>喂狗点放在主循环（不能放中断，否则主循环卡死仍被喂）；喂狗周期远小于超时时间；关键长任务要拆分出喂狗点或把超时时间放大到 2 倍余量以上；初始化早期就要开始喂狗，避免“上电即被咬”。</p></details>
         </div>
       </section>

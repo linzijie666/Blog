@@ -49,10 +49,10 @@ export default function PcbFabHdiArticle() {
         </div>
         <ArticleFigure src="images/knowledge/pcb-layout/fab-hdi-blind-buried.webp" fullSrc="images/knowledge/pcb-layout/fab-hdi-blind-buried-hd.jpg" alt="HDI 板盲孔埋孔标注" caption="HDI 板过孔放大：1:3、1:2 为盲孔，3:6 为埋孔——通孔板只能做顶层到底层的全通孔。" sourcePage="30" />
         <ArticleFigure src="images/knowledge/pcb-layout/fab-via-types-3d.webp" fullSrc="images/knowledge/pcb-layout/fab-via-types-3d-hd.jpg" alt="通孔/盲孔/埋孔 3D 结构对比" caption="从左到右：HDI 一阶、HDI 二阶、通孔、HDI 一阶的 3D 剖面——盲孔不到底、埋孔藏在内层。" sourcePage="30" />
-        <p>HDI 的价值在两点：<strong>密度</strong>——BGA 引脚间距小于 0.8mm 时扇出基本只能靠盲埋孔；<strong>信号质量</strong>——高速信号的过孔残桩（stub）更短，寄生参数更小。代价是成本高、周期长、良品率低。</p>
+        <p>HDI 的价值在密度和更短的过孔残桩，但 BGA pitch 小于 0.8mm 不等于必须使用 HDI。能否用通孔扇出还取决于球阵列、空球/缺球、层数、via-in-pad 能力、线宽线距和板厂工艺；应让 PCB 厂基于具体封装评估。</p>
         <ArticleFigure src="images/knowledge/pcb-layout/fab-bga-through-fanout.webp" fullSrc="images/knowledge/pcb-layout/fab-bga-through-fanout-hd.jpg" alt="pitch 1.0mm FPGA 通孔板扇出" caption="BGA 引脚间距 1.0mm 时，扇出通孔之间还能过 2 根走线——用通孔板即可控制成本。" sourcePage="29" />
         <ArticleFigure src="images/knowledge/pcb-layout/fab-hi3559-hdi.webp" fullSrc="images/knowledge/pcb-layout/fab-hi3559-hdi-hd.jpg" alt="海思 Hi3559 8 层二阶 HDI 设计" caption="海思 Hi3559 的 8 层二阶 HDI 板：走线密度可以做得非常高。" sourcePage="29" />
-        <p>结论是相对的：器件不特别密、主芯片引脚间距大（如 1.0mm BGA）时，<strong>能用通孔板就用通孔板</strong>；只有高密度 BGA（pitch&lt;0.8mm）或极高速信号才上 HDI。</p>
+        <p>工艺选择要由具体扇出与通道预算驱动：即使 pitch 相同，球阵列、空球、层数、线宽线距和 via-in-pad 能力不同，结果也可能不同。通孔能满足密度和信号预算时成本更低；否则再评估盲埋孔、背钻或 HDI。</p>
       </section>
 
       <section id="interview">
@@ -60,8 +60,8 @@ export default function PcbFabHdiArticle() {
         <div className="review-questions">
           <details><summary>常规 PCB 加工的最小孔径和线宽线距是多少？</summary><p>机械钻孔最小内径 0.15mm（6mil），激光孔最小 0.075mm（3mil，用于 HDI）。线宽线距极限约 3/3~4/4mil，常规设计建议 6/6mil 以上，BGA 局部可做 4/4mil；铜厚越大，最小线宽线距越大。</p></details>
           <details><summary>如何平衡 PCB 性能与成本？</summary><p>按密度选工艺：无 BGA 用 12/20mil 过孔、6/6mil 线宽线距；BGA 或高密度时过孔不小于 8/12mil、局部 4/4mil。过小工艺会推高板材与加工费、降低良品率；高压/恶劣环境还要加大线距并核对爬电距离。</p></details>
-          <details><summary>什么是通孔、盲孔、埋孔？通孔板和 HDI 板怎么选？</summary><p>通孔从顶层打通到底层；盲孔连表层与内层；埋孔只在內层之间。通孔板便宜、周期短、良率高，但孔占用所有层；HDI 用盲埋孔换取密度（BGA pitch&lt;0.8mm 基本必须 HDI）与更短的过孔残桩，成本高良率低。主芯片间距大时优先通孔板。</p></details>
-          <details><summary>BGA 扇出时过孔和线宽怎么定？</summary><p>引脚间距 ≥1.0mm 的 BGA：通孔板 8/12mil 过孔即可扇出，孔间还能过线；pitch 更小时通孔间过不了线，只能转 HDI。扇出区线宽线距局部收紧到 4/4mil，其余区域维持 6/6mil。</p></details>
+          <details><summary>什么是通孔、盲孔、埋孔？通孔板和 HDI 板怎么选？</summary><p>通孔贯穿整板，盲孔连接表层与内层，埋孔只在内层。HDI 用盲埋孔换密度和较短残桩，但成本更高；0.8mm 以下 pitch 不是单独判据，还要结合球阵列、层数、线宽线距、via-in-pad 和板厂能力评估。</p></details>
+          <details><summary>BGA 扇出时过孔和线宽怎么定？</summary><p>从封装推荐 footprint、球阵列和所需逃逸通道数出发，与板厂确认成品孔径、孔环、线宽线距和 via-in-pad 能力；必要时比较通孔、盲孔与 HDI 的层数、良率和成本。</p></details>
           <details><summary>为什么高压设计要加大线宽线距？</summary><p>高湿度凝露、腐蚀性环境或高电压下，小间距容易爬电击穿。高压设计要按工作电压加大线距，并核对电气间隙与爬电距离要求。</p></details>
         </div>
       </section>

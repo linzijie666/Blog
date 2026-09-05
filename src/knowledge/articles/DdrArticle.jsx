@@ -12,7 +12,7 @@ export default function DdrArticle() {
         <ArticleFigure src="images/knowledge/digital-chips/ddr-command-table.webp" fullSrc="images/knowledge/digital-chips/ddr-command-table-hd.jpg" alt="SDRAM 指令真值表" caption="指令真值表：NOP/激活/读/写/预充电/自动刷新/模式寄存器由 CS#/RAS#/CAS#/WE# 组合译码。" sourcePage="32" />
         <p>标准操作流程要按顺序背下来：</p>
         <div className="application-list">
-          <article><h3>上电初始化</h3><p>电源与时钟稳定后等待 200µs → 对所有 BANK 预充电 → 自动刷新 8 次 → 加载模式寄存器（设定 CL、突发长度等）。</p></article>
+          <article><h3>上电初始化</h3><p>“等待 200µs → 全 BANK 预充电 → 8 次刷新 → 加载模式寄存器”是特定 SDR SDRAM 的示例。初始化序列、等待时间、复位和校准步骤会随具体代际与器件变化，DDR2/3/4 必须按控制器要求和颗粒数据手册执行。</p></article>
           <article><h3>激活 ACT</h3><p>读写前先激活目标 BANK 的目标行，行数据进入灵敏放大器；行地址由 A0~A13 提供。</p></article>
           <article><h3>读 / 写</h3><p>激活后按列地址读写，突发（Burst）方式连续传输，读出延迟由 CAS Latency（CL）决定。</p></article>
           <article><h3>预充电 PRECHARGE</h3><p>操作完把打开的行写回并关闭（A10=1 预充所有 BANK），为下一次激活做准备。</p></article>
@@ -59,7 +59,7 @@ export default function DdrArticle() {
       <section id="routing">
         <h2>等长设计与引脚交换</h2>
         <h3>哪些引脚可以交换</h3>
-        <p>画原理图和 PCB 前先明确交换规则，能大幅降低布线难度：<strong>数据线 DQ 可以在同组内任意交换</strong>——一个 DQS 选通对应的一组 DQ（8bit 组内，如 DQ0~DQ7）内部任意调换，例如 DQ0 与 DQ7 对调；组与组之间不能混，DM、DQS 与各自的 DQ 组绑定；<strong>地址、命令、控制线不能随意交换</strong>，否则初始化后容量与时序参数全错。</p>
+        <p>引脚交换规则取决于存储器代际、控制器 PHY 和训练能力。许多 DDR3 设计允许在同一 DQS byte lane 内交换 DQ，但 DM/DBI、DQS 极性、byte lane 和地址/命令是否可交换必须查控制器约束；不能把“组内任意交换”当成所有 DDR 的通则。</p>
         <ArticleFigure src="images/knowledge/digital-chips/ddr-pin-swap.webp" fullSrc="images/knowledge/digital-chips/ddr-pin-swap-hd.jpg" alt="DQ 数据线交换分组图" caption="MT41K128M16JT-125 的 DQ15~DQ0 与 UDQS/LDQS、UDM/LDM 分组：组内可任意交换。" sourcePage="47" />
         <h3>等长与阻抗规则</h3>
         <div className="application-list">
@@ -76,11 +76,11 @@ export default function DdrArticle() {
       <section id="interview">
         <h2>面试自测</h2>
         <div className="review-questions">
-          <details><summary>SDRAM 的基本操作流程是什么？</summary><p>上电初始化（等 200µs → 预充电 → 自动刷新 8 次 → 加载模式寄存器），之后循环“激活行 → 列读写 → 预充电关闭行”，控制器再周期性发起自动刷新防止电容漏电丢数据。</p></details>
+          <details><summary>SDRAM 的基本操作流程是什么？</summary><p>运行期核心是“激活行 → 列读写 → 预充电”，并周期刷新。200µs、全 BANK 预充电、8 次刷新再 MRS 只是特定 SDR SDRAM 示例；不同 DDR 代际的复位、ZQ 校准和 MRS 顺序必须查对应数据手册。</p></details>
           <details><summary>DDR 的容量怎么计算？</summary><p>容量 = 2^(行地址线数+列地址线数+BANK 线数+BG 线数) × 位宽。例如 W9825G6KH：2^(13+9+2)×16bit=256Mb；DDR3 128Meg×16 颗粒：16K×1K×8×16bit=2Gb。BG 仅 DDR4 有。</p></details>
-          <details><summary>DDR 哪些引脚可以交换？哪些不行？</summary><p>DQ 数据线在同一 DQS 组内可任意交换（如 DQ0↔DQ7），DM/DQS 随各自组绑定；地址、命令、控制线不可交换，否则容量与初始化参数错乱。</p></details>
+          <details><summary>DDR 哪些引脚可以交换？</summary><p>没有跨平台通用答案。部分 DDR3 控制器允许 byte lane 内 DQ 交换，但 DDR4/LPDDR 的 DBI、训练与映射约束不同；必须同时核对存储器、控制器 PHY 和 PCB 指南。</p></details>
           <details><summary>DDR 布线有哪些等长与阻抗要求？</summary><p>DQ 组内相对 DQS 等长（±25~50mil 按速率），地址/命令相对 CK 等长；单端 40/50Ω、DQS 差分 80~100Ω，完整地平面参考，DDR3 用片内 ODT 端接，VREF 就近去耦。</p></details>
-          <details><summary>DDR4 相比 DDR3 新增了什么结构？</summary><p>Bank Group 分组（BG0~BG1），同组内 BANK 快速轮转、组间切换有附加延迟 tCCD_L；寻址上多了一层 BG 地址，容量公式多乘 2^BG 线数。</p></details>
+          <details><summary>DDR4 相比 DDR3 新增了什么结构？</summary><p>DDR4 引入 Bank Group。tCCD_L 用于同一 Bank Group 内的相关列命令间隔；不同 Bank Group 通常使用较短的 tCCD_S，因此控制器交错访问不同组可提高吞吐。寻址容量还要计入 BG 地址位。</p></details>
           <details><summary>DDR 带宽怎么估算？</summary><p>带宽=数据速率×位宽/8。DDR4-1600 双 64bit 通道 ≈ 2×12.8GB/s=25.6GB/s；速率档与 CL/tRCD 等 speed bin 参数一起评估。</p></details>
         </div>
       </section>

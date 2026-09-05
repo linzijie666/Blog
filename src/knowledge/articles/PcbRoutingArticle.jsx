@@ -7,7 +7,7 @@ export default function PcbRoutingArticle() {
     <>
       <section id="three-w">
         <h2>3W 原则与串扰</h2>
-        <p>两根信号线平行走线时，线间的容性耦合与感性耦合会产生串扰（crosstalk），互相干扰；如果被干扰的是时钟线、复位线，轻则采样出错，重则系统异常复位。3W 原则是最常用的布线约束：<strong>相邻走线的中心距保持 3 倍线宽（W 为走线线宽）以上</strong>。经验数据：3W 间距可把串扰降低约 70%，10W 间距可降低约 98%。</p>
+        <p>两根信号线平行走线时会产生容性与感性耦合。3W 是常见经验规则，不是固定衰减定律；实际串扰取决于层叠、参考面距离、线宽、平行长度、边沿速度和端接。可先用中心距 ≥3W 做初始布局，再依据目标层叠和场求解/仿真确定间距，不能脱离条件宣称必然降低 70% 或 98%。</p>
         <ArticleFigure src="images/knowledge/pcb-layout/routing-3w-definition.webp" fullSrc="images/knowledge/pcb-layout/routing-3w-definition-hd.jpg" alt="3W 间距定义示意图" caption="3W 原则：两条走线中心距 ≥ 3 倍线宽 W，抑制线间容性/感性耦合。" sourcePage="2" />
         <p>间距的效果可以量化：《信号完整性揭秘》给出的仿真实例中，攻击信号上升时间 200ps、幅值 500mV、耦合长度 2000mil，实际中心距 2W 时耦合到约 <strong>35mV</strong> 干扰，加大到 4W 后只剩约 <strong>3mV</strong>——差一个数量级。</p>
         <ArticleFigure src="images/knowledge/pcb-layout/routing-crosstalk-cases.webp" fullSrc="images/knowledge/pcb-layout/routing-crosstalk-cases-hd.jpg" alt="三种间距布线的串扰 NEXT 对比" caption="Case1（2W）串扰约 35mV，Case2（4W）约 3mV，Case3（加隔离地线）接近 0。" sourcePage="2" />
@@ -64,7 +64,7 @@ export default function PcbRoutingArticle() {
       <section id="interview">
         <h2>面试自测</h2>
         <div className="review-questions">
-          <details><summary>3W 原则是什么？为什么是 3W？</summary><p>相邻平行走线中心距 ≥ 3 倍线宽，用以抑制容性/感性耦合串扰；3W 约降低 70% 串扰，10W 约 98%。仿真显示中心距从 2W 加到 4W，耦合干扰从 35mV 降到约 3mV。关键信号（时钟、复位、差分对）要进一步加大间距。</p></details>
+          <details><summary>3W 原则是什么？为什么不能当定律？</summary><p>中心距 ≥3W 可作为减少平行耦合的初始经验值，但串扰还取决于层叠、参考面距离、平行长度、边沿和端接。70%/98% 等数字只对特定模型成立，关键网络应按实际叠层仿真。</p></details>
           <details><summary>什么是参考平面？电源层能作参考层吗？</summary><p>参考平面是为信号提供返回路径的完整铜平面，通常是 GND 层或电源层。对高速交变信号，电源层与地层间交流阻抗很小，电源层同样可作返回路径；多层板中信号层主要参考距离更近的那个平面。</p></details>
           <details><summary>走线为什么不能跨分割？跨了怎么办？</summary><p>跨分割使走线阻抗突变（仿真从 55Ω 跳到 85Ω）产生反射，且返回电流绕行加大环路、易辐射串扰；50ps 级高速信号可产生约 20% 过冲。补救：尽量保持参考平面完整；必须跨时在分割两侧放 2 颗 ≤1µF/0402 缝合电容跨接两个参考网络；同时警惕密集过孔反焊盘造成的隐性分割。</p></details>
           <details><summary>相邻层信号为什么要垂直走线？</summary><p>相邻层平行走线相当于电容两极板正对，层间容性耦合大；互相垂直可把平行长度降到最短、耦合最小。层数多或频率高时，还应用地/电源平面把相邻信号层隔开（如 6 层板 SIG-GND-SIG-PWR-GND-SIG）。</p></details>

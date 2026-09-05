@@ -44,12 +44,12 @@ export default function MosfetArticle() {
               <tr><th scope="row">控制方式</th><td>栅极电压控制，静态几乎不耗电流</td><td>基极电流控制，需要持续驱动电流</td></tr>
               <tr><th scope="row">导通压降</th><td>RDS(ON)×ID，可低至毫欧级</td><td>饱和残压约 0.3V，与电流成正比损耗大</td></tr>
               <tr><th scope="row">温度特性</th><td>RDS(ON) 随结温升高而增大，负反馈</td><td>VBE 下降、β 上升，正反馈</td></tr>
-              <tr><th scope="row">并联能力</th><td>可并联，自动均流</td><td>不能直接并联，热失控会烧毁</td></tr>
+              <tr><th scope="row">并联能力</th><td>强驱动欧姆区有静态均流趋势，仍需专门设计</td><td>通常需发射极均流电阻等措施</td></tr>
               <tr><th scope="row">驱动代价</th><td>每次开关消耗栅极电荷 Qg</td><td>导通期间持续消耗基极电流</td></tr>
             </tbody>
           </table>
         </div>
-        <p>MOS 并联时某管电流偏大→结温升高→RDS(ON) 增大→电流回落，构成负反馈自动均流；三极管并联时电流偏大→结温升高→VBE 下降、β 上升→电流进一步增大，正反馈直至烧毁。所以大电流场景可以放心用多颗 MOS 并联，而三极管必须用均流电阻等手段。</p>
+        <p>MOS 在栅极强驱动、欧姆区稳态导通时，RDS(ON) 的正温度系数有助于静态均流；这不能推广到线性区或开关瞬态。并联仍要评估 VGS(th)、Qg、寄生电感和散热差异，采用对称功率回路、独立栅极电阻和良好热耦合。线性工作点可能出现热失稳，必须按线性 SOA 单独校核。</p>
         <ArticleFigure src="images/knowledge/semiconductor-devices/mos-vs-bjt-temperature.webp" fullSrc="images/knowledge/semiconductor-devices/mos-vs-bjt-temperature-hd.jpg" alt="MOS 管导通电阻与三极管电流放大倍数随结温变化的曲线对比" caption="MOS 的 RDS(ON) 正温度系数是负反馈，三极管的 VBE/β 温漂是正反馈，决定并联能力差异。" sourcePage="46" />
       </section>
 
@@ -60,7 +60,7 @@ export default function MosfetArticle() {
         <ArticleFigure src="images/knowledge/semiconductor-devices/mos-pmos-soft-start.webp" fullSrc="images/knowledge/semiconductor-devices/mos-pmos-soft-start-hd.jpg" alt="PMOS 缓启动电路与工作过程分析" caption="关断时 Vgs=0 截止；导通时栅极经 R30 缓慢充电，Vgs 缓慢达到 -12V 实现软启动。" sourcePage="40" />
         <p>仿真验证了电容取值的影响：栅源并 10µF 时负载电压约 2ms 建立完成，并 1µF 时约 300µs——电容越大缓启动越慢，实际电路要按浪涌目标和上级电源承受能力调试。</p>
         <ArticleFigure src="images/knowledge/semiconductor-devices/mos-soft-start-simulation.webp" fullSrc="images/knowledge/semiconductor-devices/mos-soft-start-simulation-hd.jpg" alt="PMOS 缓启动仿真电路与两种电容取值的波形对比" caption="栅源电容 10µF 与 1µF 对应约 2ms 与 300µs 的上电斜率，缓启动时间由 RC 决定。" sourcePage="50" />
-        <aside className="article-callout"><strong>设计要点：</strong>缓启动只解决电流爬升，关断时同样要保证栅极快速放电；PMOS 栅极驱动电压不能超过 VGS 最大额定值（常见 ±12V~±20V）。</aside>
+        <aside className="article-callout"><strong>设计要点：</strong>PMOS 关断要把栅极拉回源极，使 VGS→0；这时栅极对地电压通常上升，不能照搬 NMOS 的“向地放电”说法。全过程都要保证 |VGS| 不超过额定值。</aside>
       </section>
 
       <section id="selection">
@@ -104,16 +104,16 @@ export default function MosfetArticle() {
           { src: "images/knowledge/semiconductor-devices/mos-soa.webp", fullSrc: "images/knowledge/semiconductor-devices/mos-soa-hd.jpg", alt: "MOS 管 SOA 安全工作区由五条限制线围成", caption: "SOA 的功率限制线按单脉冲时间区分：导通时间越长，允许的电流电压乘积越小。", sourcePage: "58" },
           { src: "images/knowledge/semiconductor-devices/mos-soa-selection.webp", fullSrc: "images/knowledge/semiconductor-devices/mos-soa-selection-hd.jpg", alt: "按 SOA 曲线校核 MOS 管工作点的选型实例", caption: "12V 关断、0.2V/3A 导通的工作点落在 SOA 内；若开关时间拉长到 100ms 则越界。", sourcePage: "59" }
         ]} />
-        <p>校核方法：把开关过程中最恶劣的工作点标到 SOA 图上，按实际单脉冲导通时间选择对应功率限制线。例如 12V 总线上的 NMOS 关断时 VDS=12V、电流趋近 0；导通稳定后 VDS≈0.2V、ID=3A，两点都落在 DC 区域内即可长期使用；若开关时间拉长到 100ms，同一点位可能已经越出 100ms 功率限制线，就必须缩短开关时间或换更大封装。周期性脉冲还要按占空比换算成等效单脉冲时间再查曲线。</p>
+        <p>校核方法：记录开关、缓启动或故障限制期间完整的 VDS-ID 轨迹，而不是只查关断与稳态导通两个端点；把轨迹按实际脉宽标到对应 SOA 曲线上，并结合初始结温、重复率、瞬态热阻和板级散热降额。周期性脉冲不能只靠占空比换成“等效单脉冲”，应使用厂商给出的重复脉冲 SOA/热阻模型；线性工作还要确认器件明确支持该模式。</p>
       </section>
 
       <section id="interview">
         <h2>面试自测</h2>
         <div className="review-questions">
           <details><summary>MOS 管和三极管最核心的区别是什么？</summary><p>MOS 是电压控制、容性栅极、阻性导通（RDS(ON)），静态驱动不耗电流；三极管是电流控制、饱和残压约 0.3V、需要持续基极电流。温度特性一负一正，进一步决定并联能力。</p></details>
-          <details><summary>为什么 MOS 管可以并联而三极管不能？</summary><p>MOS 的 RDS(ON) 随结温升高而增大，电流偏大的管子自动回落，是负反馈均流；三极管 VBE 随温度下降、β 上升，电流越大越导通，正反馈会烧毁器件。</p></details>
+          <details><summary>MOS 管并联为什么仍要专门设计？</summary><p>RDS(ON) 正温度系数只帮助强驱动欧姆区的稳态均流。开关瞬态和线性区还受阈值、栅极电荷、寄生参数和热耦合影响；需要对称布局、独立栅极电阻、相同散热条件，并逐段检查 SOA。</p></details>
           <details><summary>缓启动电路的时间由什么决定？</summary><p>由栅极 RC 决定：R×C 越大，VGS 建立越慢，负载电压上升越缓。仿真显示 10µF 约 2ms、1µF 约 300µs，需结合上级电源的浪涌承受能力调试。</p></details>
-          <details><summary>SOA 曲线怎么用来判断器件可用？</summary><p>把开关过程中最恶劣的（VDS, ID）工作点标到 SOA 图上，按单脉冲导通时间选对应功率限制线；工作点全部落在限制线内才安全，周期性脉冲按占空比换算等效时间。</p></details>
+          <details><summary>SOA 曲线怎么用来判断器件可用？</summary><p>把完整的 VDS-ID 轨迹按实际脉宽与初始温度映射到 SOA，而非只看端点；重复脉冲还要结合重复率、瞬态热阻和厂商重复 SOA 数据。所有轨迹点留足降额后都在限制内，才可判断安全。</p></details>
         </div>
       </section>
     </>

@@ -10,7 +10,7 @@ export default function OpampBasicsArticle() {
         <h2>虚短、虚断与虚地</h2>
         <p>运放电路计算的全部秘密浓缩在三个「虚」字上：</p>
         <div className="application-list">
-          <article><h3>虚短（Virtual Short）</h3><p>运放工作在负反馈线性放大状态时（大多数运放电路都如此），输出会自动调整反馈，使同相输入 IN+ 与反相输入 IN− 电位相等：<FormulaText text="V_{IN+}=V_{IN-}" />。理想运放完全相等；实际芯片的差值就是输入失调电压 Vos，一般为 mV 级，高精度运放可到 µV 级。</p></article>
+          <article><h3>虚短（Virtual Short）</h3><p>运放工作在负反馈线性放大状态时，输出会自动调整；理想模型写作 <FormulaText text="V_{IN+}=V_{IN-}" />，真实电路只是近似相等。实际输入差压不只来自失调电压 Vos：有限开环增益还需要约 <FormulaText text="V_{OUT}/A_{OL}" /> 的差压来产生输出，并叠加偏置、噪声和温漂等误差。</p></article>
           <article><h3>虚断（Virtual Open）</h3><p>运放输入阻抗非常大（几十 MΩ 以上），流入 IN+/IN− 的电流近似为 0：<FormulaText text="I_{IN+}=I_{IN-}=0" />。实际存在的输入电流就是输入偏置电流 IB 与失调电流 Ios，一般 nA~µA 级。</p></article>
           <article><h3>虚地（Virtual Ground）</h3><p>当 IN+ 接地时，由虚短推知 IN− 电位也是 0V——但它并没有真正接 GND，所以叫虚地。反相类电路（反相放大、反相加法、微分积分）计算的核心。</p></article>
         </div>
@@ -49,9 +49,9 @@ export default function OpampBasicsArticle() {
           <article><h3>供电电压（绝对值 vs 工作电压）</h3><p>绝对最大：单电源 32V / 双电源 ±16V，超过可能损坏；推荐工作：单电源 3~30V（双电源 ±1.5~±15V）。两个值都要看，留降额。</p></article>
           <article><h3>轨到轨（Rail to Rail）</h3><p>输出幅值能否到达供电轨。3.3V 供电的轨到轨运放可输出接近 3.3V，非轨到轨只能到约 2.6V。LM358 非轨到轨：VCC=30V 时 VOH 仅 26~28V；LT1678 则明确 Rail-to-Rail Input and Output。</p></article>
           <article><h3>开环差模增益 Ad</h3><p>理想无穷大；实际用 dB 表示 <FormulaText text="Gain=20×log(A_d)" />。LM358 约 85~120dB，随电源电压与负载变化。</p></article>
-          <article><h3>单位增益带宽 BW 与增益带宽积 GBP</h3><p>带宽是增益降到 0dB（1 倍）时的频率；GBP 是增益与带宽的乘积，数值与单位增益带宽接近。LM358 GBP min 0.7 / typ 1.1MHz：放大 500kHz 信号时增益只剩 1.1M/500k ≈ 2.2 倍。</p></article>
+          <article><h3>单位增益频率 fT 与闭环带宽</h3><p>fT 是开环增益曲线降到 1 倍（0dB）的频率；闭环带宽通常指相对低频闭环增益下降 3dB 的频率。对单主极点电压反馈运放可近似 <FormulaText text="f_{BW}≈GBW/噪声增益" />，但仍要核对环路增益和稳定性，不能把 GBW/f 当作任意频率下保证可用的闭环增益。</p></article>
           <article><h3>压摆率 SR</h3><p>输出电压的最大变化速率 <FormulaText text="SR=dV/dt" />（V/µs），决定大信号跟随能力。LM358 typ 0.6V/µs；压摆率不够时正弦变三角、方波边沿变斜坡。带宽/GBP 反映小信号能力，SR 反映大信号能力。</p></article>
-          <article><h3>CMRR 与 PSRR</h3><p>共模抑制比 <FormulaText text="CMRR=20×log(A_d/A_c)" />，越高共模干扰抑制越好，差分放大重点看；电源抑制比 <FormulaText text="PSRR=20×log(Ripple_{in}/Ripple_{out})" />，且两者都随频率升高而变差。</p></article>
+          <article><h3>CMRR 与 PSRR</h3><p>共模抑制比 <FormulaText text="CMRR=20×log(A_d/A_c)" /> 衡量共模变化折算到输入端的误差；运放 PSRR 通常也按输入折算，描述电源变化引起的输入失调变化，常用 µV/V 或 dB 表示。输出端出现多少电源纹波还取决于噪声增益、闭环与频率。</p></article>
         </div>
         <ArticleFigure src="images/knowledge/analog-devices/opamp-lt1678-cover.webp" fullSrc="images/knowledge/analog-devices/opamp-lt1678-cover-hd.jpg" alt="LT1678 手册封面" caption="LT1678/LT1679：轨到轨输入输出、3.9nV/√Hz 低噪声精密运放——与 LM358 的参数对比代表了通用与精密两档。" sourcePage="6" />
         <ArticleFigureGroup
@@ -92,23 +92,23 @@ export default function OpampBasicsArticle() {
           <article><h3>低频大幅值</h3><p>关注 SR 与轨到轨——压摆率不足波形畸变，输出摆幅不够削顶。</p></article>
         </div>
         <WorkedExample
-          title="为 100kHz 小信号放大选运放"
+          title="先判断 100kHz 放大需求能否实现"
           given={["信号幅值 ±2V、频率 100kHz，需放大 10 倍", "信号源内阻 100kΩ，供电 5V 单电源"]}
-          calculation={["GBP 需要 ≥ 10×100kHz×10（留 10 倍余量）→ ≥10MHz", "输出峰值 ±2V→单电源 5V 需轨到轨输出", "高阻信号源 → IB 小（CMOS/JFET 输入）"]}
-          verification={["确认 100kHz 大幅值下 SR ≥ 2π×f×Vpeak = 1.26V/µs → 取 ≥3V/µs", "核对输出摆幅与共模输入范围", "按精度要求再看 Vos/噪声"]}
-          answer="选型顺序：先 GBP 和 SR 卡死能不能放大，再看轨到轨与输入偏置，最后才轮到失调精度——一颗运放不可能样样都强，按需求排侧重。"
+          calculation={["题设要求输出峰值 ±20V；5V 单电源无论是否轨到轨都无法实现，必须先修改供电、增益或输入幅值", "若改用足够的双电源，100kHz、20Vpeak 正弦所需 SR≥2π×100k×20≈12.57V/µs", "噪声增益 10 时，闭环带宽与建立精度还要求 GBW 留足环路增益裕量；100kΩ 源阻抗要求低 IB 输入级"]}
+          verification={["先核对输出 ±20V 与供电轨、负载下输出摆幅和器件绝对额定值", "确认 SR≥12.57V/µs 并留畸变裕量", "再核对 100kHz 下的闭环增益误差、相位裕量、共模范围、IB、Vos 和噪声"]}
+          answer="先做可实现性检查：本题 5V 单电源不可能输出 ±20V。修正供电或信号幅值后，再按闭环带宽、12.57V/µs 以上压摆率、输入偏置和精度逐项选型。"
         />
       </section>
 
       <section id="interview">
         <h2>面试自测</h2>
         <div className="review-questions">
-          <details><summary>什么是虚短、虚断、虚地？成立条件是什么？</summary><p>虚短：负反馈线性状态下 VIN+=VIN−，源于运放输出自动调整反馈的能力；虚断：输入阻抗极大、输入电流≈0；虚地：同相端接地时反相端电位≈0V 但未真接 GND。虚短虚断都要求运放工作在线性（负反馈）区，饱和输出时不成立。</p></details>
-          <details><summary>实际运放的哪些参数对应「虚短虚断」的误差？</summary><p>虚短误差是输入失调电压 Vos（LM358 约 mV 级，精密运放 µV 级）及其温漂；虚断误差是输入偏置电流 IB 和失调电流 Ios（nA~µA 级）。信号源内阻越大，IB 引入的误差越明显。</p></details>
-          <details><summary>带宽和增益带宽积有什么区别？</summary><p>带宽（单位增益带宽）是闭环增益降到 1 倍（0dB）时的频率；GBP 是增益与带宽的乘积，数值近似等于单位增益带宽。已知 GBP 后可估算任意频率的可用增益：A≈GBP/f，如 GBP=1.1MHz 在 500kHz 时增益约 2.2 倍。</p></details>
+          <details><summary>什么是虚短、虚断、虚地？成立条件是什么？</summary><p>虚短是高开环增益、负反馈且输出在线性区时 VIN+≈VIN−；虚断来自输入阻抗很大、输入电流很小，本身不以负反馈为前提；虚地是在虚短条件下把一端固定到地后得到的近似节点。</p></details>
+          <details><summary>实际运放的哪些参数对应「虚短虚断」的误差？</summary><p>输入差压包含有限开环增益所需的 VOUT/AOL，并叠加 Vos、噪声与温漂；输入端还存在偏置电流 IB 和失调电流 Ios。源阻抗越大，输入电流造成的压降越明显。</p></details>
+          <details><summary>带宽和增益带宽积有什么区别？</summary><p>开环曲线的 0dB 交点是单位增益频率 fT；闭环带宽是指定闭环增益相对低频值下降 −3dB 的频率。单主极点电压反馈运放可近似 fBW≈GBW/噪声增益，但还必须校核环路增益与稳定性。</p></details>
           <details><summary>压摆率不足会怎样？和带宽是一回事吗？</summary><p>不是一回事。带宽/GBP 反映小信号高频放大能力；压摆率 SR=dV/dt 反映大信号输出边沿的爬升速度。SR 不足时大幅值正弦变三角波、方波边沿变斜坡。估算正弦不失真条件：SR ≥ 2π×f×Vpeak。</p></details>
           <details><summary>什么是轨到轨运放？为什么重要？</summary><p>输入或输出电压可以到达供电轨的运放。3.3V 供电时轨到轨输出能接近 3.3V，非轨到轨只能到约 2.6V（如 LM358 在 30V 供电时输出最高 27~28V）。低压单电源系统必须关注，否则动态范围被砍。</p></details>
-          <details><summary>CMRR、PSRR 定义是什么？选型时什么时候重点关注？</summary><p>CMRR=20log(Ad/Ac) 衡量对共模信号的抑制；PSRR=20log(电源纹波/输出纹波分量) 衡量对电源波动的抑制。差分放大重点看 CMRR；电源dirty（DC-DC 供电）时重点看 PSRR。两者都随频率升高大幅下降，高频段要查曲线。</p></details>
+          <details><summary>CMRR、PSRR 定义是什么？选型时什么时候重点关注？</summary><p>CMRR 描述共模变化折算到输入端的误差；运放 PSRR 通常描述电源变化造成的输入失调变化，可用 µV/V 或 dB 表示。差分小信号重点看 CMRR，供电变化大时重点看 PSRR；输出纹波还与噪声增益和频率有关。</p></details>
         </div>
       </section>
     </>

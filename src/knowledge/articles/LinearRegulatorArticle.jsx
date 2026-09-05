@@ -50,13 +50,13 @@ export default function LinearRegulatorArticle() {
         <div className="formula-block"><figcaption>LDO 效率与热损耗</figcaption><div className="formula"><FormulaText text="η≈V_{OUT}/V_{IN}　　P_D=(V_{IN}-V_{OUT})×I_{OUT}+V_{IN}×I_Q" /></div><p>例如 5V 输入 3.3V 输出效率仅 66%；12V 直接降到 3.3V 效率只剩 27.5%。静态电流 <FormulaText text="I_Q" /> 项在小电流电池应用时不可忽略。</p></div>
         <p>温升计算两步走：先算损耗，再乘热阻。AMS1117（SOT-223 封装）热阻 <FormulaText text="θ_{JA}=90°C/W" />、<FormulaText text="θ_{JC}=15°C/W" />：</p>
         <ArticleFigure src="images/knowledge/power-supplies/ldo-thermal-calc.webp" fullSrc="images/knowledge/power-supplies/ldo-thermal-calc-hd.jpg" alt="AMS1117 损耗与温升计算示例" caption="7.1.2 LDO 损耗与 7.1.3 LDO 温升：PD=(5−3.3)×0.5=0.85W，再按热阻算结温。" sourcePage="26" />
-        <div className="formula-block"><figcaption>结温计算</figcaption><div className="formula"><FormulaText text="T_J=T_A+P_D×θ_{JA}=25+0.85×90≈101.5°C" /></div><p>Tjmax 一般 125℃，25℃ 环境下已经用掉大半裕量；若按封装表面温度 70℃ 和 <FormulaText text="θ_{JC}=15°C/W" /> 估算，<FormulaText text="T_J=70+0.85×15=82.75°C" />——铺铜散热直接决定热阻，<FormulaText text="θ_{JA}" /> 与焊接铜皮面积强相关。</p></div>
+        <div className="formula-block"><figcaption>结温初算</figcaption><div className="formula"><FormulaText text="T_J≈T_A+P_D×θ_{JA}=25+0.85×90≈101.5°C" /></div><p>这只是对应特定测试板和自然对流条件的初算；θJA 会随铜面积、气流和安装方式变化。θJC 只适用于规定壳体测点与热流条件，不能拿任意封装顶面温度直接换算结温；顶面实测应使用器件给出的 ΨJT 及其条件，或建立经验证的热模型。</p></div>
         <WorkedExample
           title="AMS1117 5V→3.3V/500mA 温升校核"
-          given={["输入 5V，输出 3.3V，负载电流 500mA，静态电流约 5mA", "AMS1117 SOT-223：θJA=90°C/W，θJC=15°C/W，Tjmax=125℃"]}
-          calculation={["热损耗 PD=(5−3.3)×0.5=0.85W（Iq 项 5V×5mA=0.025W，可忽略）", "按环境温度算：Tj=25+0.85×90=101.5℃", "按封装表面 70℃ 算：Tj=70+0.85×15=82.75℃"]}
-          verification={["两种口径都低于 125℃，但 25℃ 口径裕量只有约 20℃", "加大铺铜面积或改 SOT-89/TO-252 封装可显著降低 θJA", "负载若升到 800mA，PD=1.36W，Tj≈147℃ 超限——必须降差或换 DC-DC"]}
-          answer="我先算压差损耗，再用 θJA/θJC 两种口径估结温，结论是“能用但要铺铜、要控负载”——面试时给出裕量判断比只报一个温度更有说服力。"
+          given={["输入 5V，输出 3.3V，负载电流 500mA，静态电流约 5mA", "示例热阻 θJA=90°C/W、Tjmax=125℃；真实值须对应具体厂商、封装与测试板"]}
+          calculation={["热损耗 PD≈(5−3.3)×0.5+5V×5mA=0.875W", "按示例 θJA 初算：Tj≈25+0.875×90≈103.8℃", "环境升到 50℃ 时同条件约 128.8℃，已超 125℃；不能用任意顶面温度配 θJC 另算一个更低结果"]}
+          verification={["按目标 PCB 铜面积、环境温度和气流查厂商热数据或实测校准", "若用顶面测温，采用手册给出的 ΨJT 及测试条件", "提高负载、输入电压或环境温度后重新算最坏结温并留降额"]}
+          answer="先算最坏损耗，再用与实际板级条件相符的 θJA/热模型估算；θJC 不能与任意封装表面温度搭配。这个例子在 25℃ 已缺少裕量，50℃ 环境会超限，应降压差、降负载或改用 DC-DC。"
         />
       </section>
 

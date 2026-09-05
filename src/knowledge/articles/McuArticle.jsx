@@ -34,7 +34,7 @@ export default function McuArticle() {
         <div className="formula-block"><figcaption>负载电容计算</figcaption><div className="formula"><FormulaText text="C_L=(C_1×C_2)/(C_1+C_2)+C_{stray}" /></div><p><FormulaText text="C_{stray}" /> 是 PCB 走线与引脚寄生电容，经验值 3~5pF。两颗电容对称取值时 <FormulaText text="C_1=C_2=2×(C_L-C_{stray})" />：例如 CL=12pF、Cstray=4pF，则 C1=C2=2×8=16pF（恰为 E24 标称值），工程上也常就近取 18pF，此时实际 CL≈13pF，频偏影响见下方校核；32.768kHz 晶振 CL=12.5pF 同样算出约 17pF，取 18pF。</p></div>
         <p>选晶振时核对四个参数：标称频率、频率偏差（ppm）、负载电容 CL、ESR。下图商城参数里红框标出的“负载电容 12pF”就是配 2×18pF 电容的依据。</p>
         <ArticleFigure src="images/knowledge/digital-chips/crystal-params.webp" fullSrc="images/knowledge/digital-chips/crystal-params-hd.jpg" alt="X322525MOB4SI 晶振参数" caption="25MHz 贴片晶振 X322525MOB4SI：频差 ±10ppm、负载电容 12pF（红框）——决定外围电容取值。" sourcePage="57" />
-        <p>把单片机的时钟来源画成时钟树就能讲清全貌：HSE 4~16MHz 经 PLL 倍频到 SYSCLK 72MHz，再经 AHB/APB 分频到各外设；LSE 32.768kHz 走 RTC；LSI 40kHz 只喂独立看门狗；MCO 引脚可以对外输出时钟。</p>
+        <p>把单片机的时钟来源画成时钟树就能讲清全貌：HSE 4~16MHz 经 PLL 倍频到 SYSCLK 72MHz，再经 AHB/APB 分频到各外设；LSE 32.768kHz 常用于 RTC；LSI 约 40kHz 可驱动 IWDG，也可选作 RTC 时钟，但精度和低功耗特性不同；MCO 引脚可以对外输出时钟。</p>
         <ArticleFigure src="images/knowledge/digital-chips/mcu-clock-tree.webp" fullSrc="images/knowledge/digital-chips/mcu-clock-tree-hd.jpg" alt="STM32F1 时钟树" caption="STM32F1 时钟树：HSE/HSI → PLL → SYSCLK 72MHz → AHB/APB1/APB2，LSE→RTC、LSI→IWDG。" sourcePage="63" />
         <p>晶振电路的 datasheet 参数也要会查：外部时钟频率范围、OSC_IN 高低电平阈值、占空比、输入电容等，PCB 布局上晶振紧靠芯片、走线短、远离干扰源并包地处理。</p>
         <ArticleFigure src="images/knowledge/digital-chips/mcu-hse-params.webp" fullSrc="images/knowledge/digital-chips/mcu-hse-params-hd.jpg" alt="高速外部时钟特性参数表" caption="Table 20 HSE 用户时钟特性：频率范围、VIH/VIL、占空比 45%~55%、输入电容等。" sourcePage="11" />
@@ -55,7 +55,7 @@ export default function McuArticle() {
         <p>芯片内部的上电/掉电复位（POR/PDR）是最后一道防线：VDD 上升越过 VPOR 阈值后内部复位保持 <FormulaText text="t_{RSTTEMPO}" /> 才释放，跌到 VPDR 以下重新复位，两者之间约 40mV 迟滞防止电压临界抖动。</p>
         <ArticleFigure src="images/knowledge/digital-chips/mcu-por-waveform.webp" fullSrc="images/knowledge/digital-chips/mcu-por-waveform-hd.jpg" alt="POR/PDR 复位波形" caption="Figure 5 上电/掉电复位波形：VPOR/PDR 阈值、40mV 迟滞与 tRSTTEMPO 临时延时。" sourcePage="10" />
         <h3>BOOT 启动配置</h3>
-        <p>BOOT0/BOOT1 决定启动空间：BOOT0=0 从主 FLASH 启动（正常运行）；BOOT0=1、BOOT1=0 从系统存储器启动（厂家 bootloader，串口/USB 下载）；BOOT0=1、BOOT1=1 从内置 SRAM 启动（调试用，掉电丢失）。电路上 BOOT0 经 10kΩ 下拉到地，配合跳线帽或拨码选择。</p>
+        <p>BOOT0/BOOT1 决定启动空间：BOOT0=0 从主 FLASH 启动；BOOT0=1、BOOT1=0 从系统存储器启动；BOOT0=1、BOOT1=1 从 SRAM 启动。本文指定的中容量 STM32F103RB 原厂 ROM bootloader 支持 USART1，不支持 USB DFU；其他 STM32 型号的接口必须查 AN2606，自行写入的 USB bootloader 则是另一回事。</p>
         <ArticleFigure src="images/knowledge/digital-chips/mcu-boot-modes.webp" fullSrc="images/knowledge/digital-chips/mcu-boot-modes-hd.jpg" alt="Table 9 Boot modes 启动模式表" caption="BOOT1/BOOT0 组合选择 Main Flash / System memory / Embedded SRAM 启动。" sourcePage="11" />
       </section>
 

@@ -62,15 +62,15 @@ test("the homepage replaces the contact finale with the knowledge column", async
     read("src/knowledge/KnowledgeSection.jsx")
   ]);
 
-  assert.match(app, /label: "Knowledge", href: "#knowledge"/);
+  assert.match(app, /label: "Knowledge", href: "#\/knowledge"/);
   assert.match(app, /<KnowledgeSection/);
   assert.doesNotMatch(app, /className="contact-finale/);
   assert.match(app, /<KnowledgeArticle email=\{email\}/);
   assert.match(app, /scrollToHomeAnchor\(locationHash\)/);
   assert.match(section, /id="knowledge"/);
   assert.match(section, /tabIndex="-1"/);
-  assert.match(section, /legacyArticle\.hash/);
-  assert.match(section, /开始复习/);
+  assert.match(section, /KNOWLEDGE_INDEX_HASH/);
+  assert.match(section, /进入知识库/);
 });
 
 test("the floating shortcut remains an email contact path", async () => {
@@ -277,15 +277,15 @@ test("the worked example primitive exposes the four review stages", async () => 
   assert.match(example, /aria-labelledby/);
 });
 
-test("the homepage and app expose all review articles while preserving the legacy article", async () => {
+test("the hub exposes all review articles while preserving the legacy article", async () => {
   const [app, section] = await Promise.all([
     read("src/App.jsx"),
-    read("src/knowledge/KnowledgeSection.jsx")
+    read("src/knowledge/KnowledgeHub.jsx")
   ]);
 
   assert.match(app, /<ReviewArticle slug=\{knowledgeRoute\}/);
   assert.match(app, /knowledgeRoute === "capacitor-inductor"/);
-  assert.match(section, /reviewArticles\.filter/);
+  assert.match(section, /results\.filter/);
   assert.match(section, /knowledgeChapters/);
   assert.match(section, /延伸阅读/);
   assert.match(section, /下载\{chapter\.index\}完整课件/);
@@ -294,7 +294,7 @@ test("the homepage and app expose all review articles while preserving the legac
 test("the knowledge column groups articles into eight chapters", async () => {
   const [registry, section, css] = await Promise.all([
     read("src/knowledge/articles.js"),
-    read("src/knowledge/KnowledgeSection.jsx"),
+    read("src/knowledge/KnowledgeHub.jsx"),
     read("src/knowledge/knowledge.css")
   ]);
 
@@ -795,7 +795,7 @@ test("the pcb decoupling article covers placement rules, decoupling radius and c
   for (const topic of ["单独分配", "引线尽可能短", "BGA", "去耦半径", "磁珠", "22Ω", "0.35", "87.5", "包地"]) {
     assert.match(article, new RegExp(topic));
   }
-  assert.match(article, /d_\{decap\} ≈ λ\/40 ~ λ\/50/);
+  assert.match(article, /d_\{decap\}≈λ\/40~λ\/50.*经验估算/);
   assert.equal((article.match(/<WorkedExample/g) ?? []).length, 2);
   assert.match(article, /title="100nF 去耦电容为什么必须贴着引脚放"/);
   assert.match(article, /title="产品辐射超标，定位时钟问题"/);
@@ -827,7 +827,7 @@ test("the pcb ground article covers thermal relief, agnd split and the 20H rule"
     read("src/knowledge/articles.js")
   ]);
 
-  for (const topic of ["热风焊盘", "十字花", "虚焊", "地弹", "AGND", "单点接地", "20H", "21.65", "433", "70%", "98%"]) {
+  for (const topic of ["热风焊盘", "十字花", "虚焊", "地弹", "AGND", "连续地平面", "寄生阻抗", "20H", "21.65", "433"]) {
     assert.match(article, new RegExp(topic));
   }
   assert.equal((article.match(/<WorkedExample/g) ?? []).length, 2);
@@ -880,7 +880,7 @@ test("the pcb power layout article covers switch-mode rules and current capacity
     read("src/knowledge/articles.js")
   ]);
 
-  for (const topic of ["环路面积", "SW", "thermal pad", "355", "FB", "RT6253", "10K", "40mil", "108.9", "2.4A", "200mA"]) {
+  for (const topic of ["环路面积", "SW", "thermal pad", "355", "FB", "RT6253", "10K", "40mil", "108.9", "2.44A", "200mA"]) {
     assert.match(article, new RegExp(topic));
   }
   assert.match(article, /I = k × ΔT\^0\.44 × A\^0\.725/);
@@ -905,7 +905,7 @@ test("the opamp basics article covers virtual short, parameters and selection", 
   assert.match(article, /V_\{IN\+}=V_\{IN-\}/);
   assert.equal((article.match(/<WorkedExample/g) ?? []).length, 2);
   assert.match(article, /title="反相放大器输出计算"/);
-  assert.match(article, /title="为 100kHz 小信号放大选运放"/);
+  assert.match(article, /title="先判断 100kHz 放大需求能否实现"/);
   for (const image of ["opamp-lm358-pinout", "opamp-lm358-vos-datasheet", "opamp-lt1678-cover", "opamp-openloop-bode", "opamp-slew-rate-response"]) {
     assert.match(article, new RegExp(image));
   }

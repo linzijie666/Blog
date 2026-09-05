@@ -54,7 +54,7 @@ export default function OpampCircuitsArticle() {
         <ArticleFigureGroup
           figures={[
             { src: "images/knowledge/analog-devices/gain-differentiator.webp", fullSrc: "images/knowledge/analog-devices/gain-differentiator-hd.jpg", alt: "微分电路原理图", caption: "VIN—C—虚地节点—R—VOUT，IN+ 经 R1 1kΩ 平衡接地。", sourcePage: "14" },
-            { src: "images/knowledge/analog-devices/gain-differentiator-wave.webp", fullSrc: "images/knowledge/analog-devices/gain-differentiator-wave-hd.jpg", alt: "微分电路方波响应波形", caption: "图 6.1.20：方波输入，输出在上升沿出正尖峰、下降沿出负尖峰。", sourcePage: "14" }
+            { src: "images/knowledge/analog-devices/gain-differentiator-wave.webp", fullSrc: "images/knowledge/analog-devices/gain-differentiator-wave-hd.jpg", alt: "微分电路方波响应波形", caption: "反相微分器满足 VOUT=−RC·dVIN/dt：方波上升沿出负尖峰，下降沿出正尖峰。若原图极性相反，应核对其是否为无源 RC 微分电路。", sourcePage: "14" }
           ]}
         />
         <p><strong>积分电路</strong>（R 串联输入、C 反馈）：虚地下 <FormulaText text="I_R=V_{IN}/R" /> 给电容充电：</p>

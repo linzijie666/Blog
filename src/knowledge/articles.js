@@ -557,6 +557,14 @@ export const legacyArticle = {
 };
 
 export const articleRegistry = [...reviewArticles, legacyArticle];
+export function filterReviewArticles(query = "", chapterId = "all") {
+  const needle = query.trim().toLocaleLowerCase();
+  return reviewArticles.filter(article => {
+    const chapter = knowledgeChapters[article.chapter];
+    return (chapterId === "all" || article.chapter === chapterId) &&
+      [article.title, article.summary, chapter.index, chapter.title].join(" ").toLocaleLowerCase().includes(needle);
+  });
+}
 
 export function getArticleBySlug(slug) {
   return articleRegistry.find((article) => article.slug === slug) ?? null;

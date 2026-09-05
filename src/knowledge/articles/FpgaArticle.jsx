@@ -38,7 +38,7 @@ export default function FpgaArticle() {
       <section id="power">
         <h2>三路电源与上电时序</h2>
         <p>FPGA 通常需要三路电源：<strong>VCCINT</strong> 内核电源（1.0V）、<strong>VCCAUX</strong> 辅助电源（1.8V，供 PLL/配置等）、<strong>VCCO</strong> 各 BANK 的 IO 电源（按 IO 标准选 3.3V/2.5V/1.35V 等）。时序错了轻则配置失败，重则闩锁损坏。</p>
-        <p>Xilinx 官方建议：上电按 VCCINT/VCCBRAM → VCCAUX → VCCO 顺序，掉电反向；如果 VCCINT 与 VCCAUX 由同一电源输出则可同时上电，VCCO 时序相对宽松但推荐最后上电，保证上电瞬间 IO 引脚呈三态（高阻态 Z）。</p>
+        <p>Xilinx 官方建议：上电按 VCCINT/VCCBRAM → VCCAUX → VCCO 顺序，掉电反向。VCCINT 与 VCCBRAM 在推荐电压相同且数据手册允许时可共用同一电源输出；1.0V 的 VCCINT 与 1.8V 的 VCCAUX 不能接到同一固定输出。具体时序、斜率和单调性仍以所用 FPGA 数据手册为准。</p>
         <ArticleFigure src="images/knowledge/digital-chips/fpga-artix-power.webp" fullSrc="images/knowledge/digital-chips/fpga-artix-power-hd.jpg" alt="Artix-7 上电时序与推荐工作条件" caption="Power-On/Off Sequencing 说明 + Table 2 推荐工作条件（VCCINT 0.95~1.05V 等），右侧为课程标注。" sourcePage="24" />
         <p>ALTERA 的写法不同但思路一致：Cyclone V 把电源分成 Group 1（1.1V：VCC、VCCIO_GXB 等）与 Group 2（2.5V：VCCPGA/VCCAUX/VCCPLL 等），要求 Group 1 至少充到满轨的 80% 后 Group 2 才开始上电。</p>
         <ArticleFigure src="images/knowledge/digital-chips/fpga-cyclone-power.webp" fullSrc="images/knowledge/digital-chips/fpga-cyclone-power-hd.jpg" alt="Cyclone V 上电时序分组建议" caption="Figure 10-3：Group 1（1.1V）先行，达到 80% 后再上 Group 2（2.5V）。" sourcePage="25" />

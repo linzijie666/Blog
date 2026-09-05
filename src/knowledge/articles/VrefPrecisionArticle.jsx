@@ -10,13 +10,13 @@ export default function VrefPrecisionArticle() {
         <h2>提高精度的系统方法</h2>
         <p>提高 ADC 检测精度是系统性工程，覆盖方案设计、器件选型到 PCB 布局。七步法总览：</p>
         <div className="application-list">
-          <article><h3>1. 合理选型</h3><p>让量程贴合信号 + 尽可能高的位数，把 LSB 做小：<FormulaText text="LSB=FSR/2^N" />。同样 8bit ADC 测 0~1V 信号，量程设 1.65V 比设 3.3V 精度直接翻倍。同时关注 OE/GE/DNL/INL/TUE/ENOB 这些实际误差项。</p></article>
-          <article><h3>2. 阻抗匹配</h3><p>信号源输出阻抗越小、ADC 输入阻抗越大越好。独立 ADC 输入阻抗 MΩ 级，而 STM32 内置 ADC 只有 kΩ 级——电阻型传感器（NTC、压力膜）直连会分压失真，用运放同相跟随缓冲。</p></article>
+          <article><h3>1. 合理选型</h3><p>让量程贴合信号并选择足够 ENOB，把 LSB 做小：<FormulaText text="LSB=FSR/2^N" />。量程减半只代表理想 LSB 减半、量化分辨率提高；总精度仍由 OE/GE/DNL/INL、噪声和基准误差共同决定。</p></article>
+          <article><h3>2. 驱动与建立</h3><p>许多 SAR ADC 的输入是开关电容网络。STM32 手册的 RAIN 表示给定采样时间下允许的外部源阻抗，不是固定的 ADC 输入电阻。应按信号源的戴维南阻抗、采样电容建立时间和目标误差校核；不满足时延长采样时间或用合适的运放缓冲。</p></article>
           <article><h3>3. 单端 vs 差分</h3><p>差分输入抗共模干扰，适合长距离传输；单端信号也可用「信号+采样点 GND」构成伪差分。详见下节。</p></article>
           <article><h3>4. 低通滤波</h3><p>ADC 采的多是低频信号，在运放与 ADC 之间加一阶 RC 低通抑制 MHz 级开关噪声。AD7980 实例：采 100kHz 正弦用 18.9Ω+2.7nF（fc≈3.1MHz，保信号滤开关噪声）。</p></article>
           <article><h3>5. 高精度基准源</h3><p>VREF 决定量程，基准不准一切白搭。低成本用电源或 1% 电阻分压；高精度用专用基准芯片（精度百分比 + 温漂 ppm/°C 两项指标）。</p></article>
           <article><h3>6. 电源设计</h3><p>ADC、运放、基准源用独立 LDO 供电（LDO 的 PSRR 能压制开关电源噪声），不与数字部分共轨；每个模拟器件 10µF+100nF 大小电容搭配去耦。</p></article>
-          <article><h3>7. PCB 布局</h3><p>模拟/数字分区布局不交叉；AGND 与 GND 分开铺铜、0Ω 单点连接；关键输入信号包地；模拟器件远离开关电源、主芯片等热源和大功率源，降温漂。</p></article>
+          <article><h3>7. PCB 布局</h3><p>模拟与数字功能分区摆放，优先保持连续地平面和短而可预测的回流路径；是否分割 AGND/DGND 必须服从 ADC/基准器件手册。0Ω 或磁珠有寄生阻抗，不能同时保证等电位并隔绝高频噪声。</p></article>
         </div>
         <ArticleFigure src="images/knowledge/analog-devices/vref-analog-digital-partition.webp" fullSrc="images/knowledge/analog-devices/vref-analog-digital-partition-hd.jpg" alt="模拟与数字分区布局示意" caption="模拟区（电源、时钟、ADC、基准、滤波、放大）与数字区（时序、缓存、逻辑、存储）虚线分区。" sourcePage="39" />
         <ArticleFigure src="images/knowledge/analog-devices/vref-ldo-psrr.webp" fullSrc="images/knowledge/analog-devices/vref-ldo-psrr-hd.jpg" alt="LDO 的 PSRR 频率曲线" caption="LDO 在 100Hz 处 PSRR 约 80dB，随频率下降——这正是模拟供电选 LDO 的原因。" sourcePage="38" />
@@ -25,7 +25,7 @@ export default function VrefPrecisionArticle() {
 
       <section id="signal-conditioning">
         <h2>匹配、差分、滤波与开尔文</h2>
-        <p><strong>阻抗匹配</strong>的标准解是同相跟随：NTC 10kΩ 分压 → 2.2Ω 调试电阻 → LM358 跟随器 → 2.2Ω → ADC_IN。跟随器输入阻抗几十 MΩ，RAIN 怎么变都不影响分压点。</p>
+        <p><strong>驱动与建立</strong>不能只看直流输入阻抗：NTC 分压的源阻抗可能使 ADC 采样电容在采样窗内建立不充分。先按手册选择采样时间；需要缓冲时，运放还要满足输入/输出范围、稳定时间与容性负载稳定性，并配合适当 RC。</p>
         <p><strong>单端 vs 差分</strong>：实测对比最直观——单端采样时采样时钟边沿在信号上耦出毛刺；同样信号改差分传输、末端做减法，共模毛刺被抵消，波形干净。</p>
         <ArticleFigure src="images/knowledge/analog-devices/vref-single-vs-differential.webp" fullSrc="images/knowledge/analog-devices/vref-single-vs-differential-hd.jpg" alt="单端与差分采样实测对比" caption="(A) 单端：时钟沿毛刺明显；(B) 差分：共模干扰被减法抵消，正弦干净。" sourcePage="35" />
         <p>差分输入的三种实现：<strong>①差分 ADC 直采</strong>（信号对经一阶 RC 低通直接进 IN+/IN−，如 LTC2385；不需要放大时最简）；<strong>②双运放分别跟随</strong>后进差分 ADC（信号源阻抗高时先做阻抗变换）；<strong>③需要放大时用仪用放大器</strong>或三运放结构，输出接单端 ADC。电流采样还可以用<strong>开尔文走线</strong>：从采样电阻焊盘内侧引出检测线，避免主回路铜皮压降混入测量——这是「伪差分」思想在 layout 上的落地。</p>
@@ -39,7 +39,7 @@ export default function VrefPrecisionArticle() {
         <div className="application-list">
           <article><h3>① DDR 的 VREFCA/VREFDQ</h3><p>DDR3 判决电平参考：VREFCA 供命令/地址（自刷新期间也必须维持），VREFDQ 供数据（除自刷新外必须维持），标称 VDDQ/2=0.75V（SSTL15），判别门限围绕 VREF±AC 噪声/±DC 误差分布。</p></article>
           <article><h3>② CMOS 传感器特殊电压轨</h3><p>图像传感器除常规电源外还有大量小电流、高精度、低噪声的参考/像素电压轨（VDDPIX、VDRH/VDRL、VTX 等），常由 DAC+运放或数控电位器生成。</p></article>
-          <article><h3>③ ADC/DAC 的基准输入</h3><p>Vref 决定 FSR：如 24bit Σ-Δ ADC AD7192 用差分基准输入 REFIN1±，抗干扰更好、基准范围 1V~AVDD 灵活；DAC AD5683 的 VREF 引脚双向——可用内部 2.5V 基准（输出模式，10nF 去耦）或外部基准输入。</p></article>
+          <article><h3>③ ADC/DAC 的基准输入</h3><p>Vref 决定 FSR：如 AD7192 使用差分基准输入 REFIN1±。型号后缀必须分清：AD5683 只接受外部基准；带 R 后缀的 AD5683R 才集成 2.5V 基准，并可按配置把 VREF 作为基准输入或输出。</p></article>
           <article><h3>④ 运放偏置电压</h3><p>低侧电流检测要测双向电流时，给检测输出叠加 Vs/2=1.65V 偏置，防负电压超出 ADC 量程——图 2-1 用跟随器缓冲 1.65V，图 2-2 用戴维南等效（20k/20k 分压≈1.65V、内阻 10k）。</p></article>
           <article><h3>⑤ 电源反馈基准</h3><p>反激电源次级反馈 = 电阻分压取样 + TLV431 基准比较 + 光耦隔离，基准源是稳压环路的「尺子」。</p></article>
         </div>
@@ -53,7 +53,7 @@ export default function VrefPrecisionArticle() {
         <div className="application-list">
           <article><h3>① 电阻分压</h3><p>成本最低，但带载即掉压：电流越大 Vref 越低，只能给几乎不吃电流的场合。</p></article>
           <article><h3>② 电阻分压 + 运放跟随</h3><p>跟随器高输入阻抗/低输出阻抗，支持约 ±30mA 推拉电流且输出不随负载变化；配数控电位器（如 AD5254+LT6220）还能 I2C 数控调压（实例：给传感器生成 2.0~4.0V 可调轨）。</p></article>
-          <article><h3>③ DAC + 运放</h3><p>电压数控可调、灵活，适合即时可调或多路参考；DAC 本身只出 mA 级且不灌电流，加跟随器后同样 ±30mA；成本偏高。</p></article>
+          <article><h3>③ DAC + 运放</h3><p>电压数控可调，适合即时可调或多路参考。电压输出 DAC 的缓冲器通常可以 source 和 sink 电流，但能力、线性度和稳定性取决于具体 VOUT 负载条件；外加运放时再按所需电流、摆幅、SR、建立时间与容性负载选型。</p></article>
           <article><h3>④ PWM + RC 滤波（+运放）</h3><p>占空比 D 的 PWM 经 RC 滤波得 V≈3.3×D（50% → 1.65V），成本最低的可数控方案；缺点是输出不精确、纹波大（实测波形可见波动），要电流能力还得加运放。</p></article>
           <article><h3>⑤ DDR 专用电源芯片</h3><p>TPS51200 一类同时输出 VTT 端接电源与 VTTREF 参考（REFIN 引脚设电压），是 DDR 供电的专用解。</p></article>
           <article><h3>⑥ TL431 可调基准</h3><p>三脚（K 阴极/R 参考/A 阳极）可调齐纳：内部是基准+运放+三极管负反馈，R 脚阈值 2.5V。成本低、输出 2.5~36V，精度 1%（也有 0.5%/2%）。VKA=Vref(1+R1/R2)+Iref×R1，Iref≈2µA 可忽略时 VKA≈2.5×(1+R1/R2)。</p></article>
@@ -86,7 +86,7 @@ export default function VrefPrecisionArticle() {
       <section id="interview">
         <h2>面试自测</h2>
         <div className="review-questions">
-          <details><summary>如何系统性提高 ADC 采样精度？</summary><p>七步：①合理选型（量程贴合信号+高位数，LSB=FSR/2^N）；②阻抗匹配（高阻信号源加运放跟随）；③差分/伪差分抗共模；④前端 RC 低通滤波；⑤高精度低温漂基准源；⑥模拟部分独立 LDO 供电 + 大小电容去耦；⑦PCB 模数分区、0Ω 单点接地、包地、远离热源与大功率源。</p></details>
+          <details><summary>如何系统性提高 ADC 采样精度？</summary><p>先做误差预算：量程、ENOB、偏移、增益、INL、噪声和基准；再核对采样电容建立时间与源阻抗，必要时延长采样或加合适的缓冲/RC；最后规划连续回流路径、供电去耦、差分/开尔文连接、热源距离，并按器件手册决定接地方式。</p></details>
           <details><summary>差分输入为什么抗干扰？有哪些实现方式？</summary><p>两根线拾取的共模干扰在接收端减法时被抵消，尤其适合长距离传输。实现：①差分 ADC 直采（LTC2385 + RC 低通）；②双运放分别同相跟随再做差分；③需放大时用仪放/三运放结构；电流采样用开尔文走线（伪差分）消除引线压降。</p></details>
           <details><summary>列出你知道的参考电压生成方案及适用场景。</summary><p>①电阻分压（最便宜、几乎不带载）；②分压+运放跟随（±30mA，可配数控电位器）；③DAC+运放（数控可调、成本高）；④PWM+RC 滤波（最低成本数控、精度差纹波大）；⑤DDR 专用电源（TPS51200 出 VTT/VTTREF）；⑥TL431（2.5~36V 可调、1% 精度、mA 级）；⑦专用基准芯片（0.1%、低于 10ppm/℃、FORCE/SENSE 远端检测）。</p></details>
           <details><summary>推导 TL431 的输出电压公式。</summary><p>R 脚电压=内部基准 2.5V 时平衡：VKa 经 R1/R2 分压再叠加 Iref 在 R1 上的压降，VKA=Vref(1+R1/R2)+Iref×R1；Iref≈2µA 很小，忽略后 VKA≈2.5×(1+R1/R2)。应用 A（R 脚直连阴极）固定输出 2.5V。</p></details>

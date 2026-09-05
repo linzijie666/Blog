@@ -132,7 +132,9 @@ node --test
 
 ### 修改知识专栏
 
-知识专栏按章组织，章定义与文章元数据集中在 `src/knowledge/articles.js`（`knowledgeChapters` + `reviewArticleDefinitions`），专栏首页的分组卡片位于 `src/knowledge/KnowledgeSection.jsx`，共享页面框架位于 `src/knowledge/ArticleShell.jsx`（按章节渲染对应 PDF 下载）。三十八篇复习文章正文都位于 `src/knowledge/articles/`，并在 `src/knowledge/ReviewArticle.jsx` 中映射；旧文章正文保留在 `src/knowledge/KnowledgeArticle.jsx`。
+知识库首页为 `#/knowledge`，由 `src/knowledge/KnowledgeHub.jsx` 提供搜索、章节筛选和 PDF 下载。搜索匹配标题、摘要和章节名称，与章节筛选叠加；刷新或重新进入后恢复全部。数据和统计均来自 `src/knowledge/articles.js`，不复制元数据。首页的 `KnowledgeSection.jsx` 仅展示紧凑入口，旧 `#knowledge` 锚点仍定位该入口。文章页返回知识库，38 篇复习文章及旧文的地址保持不变。
+
+知识库样式在 `src/knowledge/hub.css`：桌面三列、平板两列、手机单列，窄屏章节按钮可横向滚动。搜索结果数会向辅助技术播报，支持清除筛选和空结果提示。
 
 当前文章使用以下 Hash 地址：
 

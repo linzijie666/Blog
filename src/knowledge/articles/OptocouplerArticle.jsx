@@ -43,7 +43,7 @@ export default function OptocouplerArticle() {
         <h2>光耦电路设计</h2>
         <p><strong>输入侧限流：</strong>LED 与普通二极管一样需要限流电阻。已知单片机 3.3V 输出、LED 压降 UF=1.25V、目标工作点 IF=2mA，则 <FormulaText text="R_{IN} = (3.3V - 1.25V)/2mA ≈ 1kΩ" />。</p>
         <p><strong>输出侧上拉：</strong>输出三极管相当于受光控制的开关，集电极经上拉电阻接到目标电压域。上拉电阻有下限：输出电流不能超过 <FormulaText text="I_C = I_F·CTR" /> 的能力；取值大一些可以降低静态功耗，但会拖慢上升沿（上拉电阻与负载电容构成 RC）。</p>
-        <p>实际应用还要加输出 TVS 防护和输入防反二极管——光耦正向耐压可达几十伏，反向耐压只有几伏，反接会损坏输入侧 LED。注意这个典型电路输出逻辑是反相的：GPIO 高电平→LED 亮→三极管导通→输出被拉低。</p>
+        <p>输入 LED、输出晶体管和隔离栅是三组不同额定值：输入侧查 VF、IF 与反向 VR；几十伏通常是输出晶体管的 VCEO，不能当成 LED 正向耐压；输入输出之间还要单独查隔离耐压。需要防反时在 LED 侧加反并联二极管或其他限压措施，输出侧浪涌保护则按负载环境设计。</p>
         <ArticleFigure src="images/knowledge/semiconductor-devices/optocoupler-circuits.webp" fullSrc="images/knowledge/semiconductor-devices/optocoupler-circuits-hd.jpg" alt="光耦输入限流与输出上拉完整电路设计" caption="输入按 IF 工作点算限流电阻，输出按 IF·CTR 校核上拉电阻下限，输出逻辑取反。" sourcePage="33" />
         <WorkedExample
           title="3.3V GPIO 隔离驱动 12V 输出的光耦校核"
@@ -60,7 +60,7 @@ export default function OptocouplerArticle() {
         <p>它们的逻辑功能几乎相同，可以互换：都能做“线与”——多个 OC/OD 输出直接并联，任何一个输出低电平，总线就是低电平；只有全部输出高电平，总线才被上拉为高。差别在细节：OC 门饱和导通的低电平约 0.3V（VCE(sat) 残压），OD 门可以低到接近 0V；OC 门是电流控制、功耗略高。</p>
         <ArticleFigure src="images/knowledge/semiconductor-devices/oc-od-wired-and.webp" fullSrc="images/knowledge/semiconductor-devices/oc-od-wired-and-hd.jpg" alt="OC 门与 OD 门对比电路和线与真值表" caption="OD 门与 OC 门电路逻辑几乎相同可互换，低电平残压分别为约 0V 与 0.3V。" sourcePage="35" />
         <div className="formula-block"><figcaption>线与逻辑</figcaption><div className="formula"><FormulaText text="OUT = IN1·IN2·…·INn（任一为低即低）" /></div><p>两路线与的真值表只有 HH 输出高，其余全为低；上拉电阻在多门并联时可以合并为一个。</p></div>
-        <p>线与最有名的应用是 IIC 总线：SDA 数据线靠 OD/OC 输出实现“任一设备拉低即总线为低”，总线空闲时被上拉为高，任意从设备都能发起应答，因此一条线可以挂 127 个从设备。</p>
+        <p>线与最有名的应用是 IIC 总线：SDA 靠 OD/OC 输出实现“任一设备拉低即总线为低”，空闲时由上拉电阻拉高。7 位地址有 128 个编码，但基本规范保留地址组，通常可分配范围为 0x08~0x77，共 112 个；实际设备数还受地址冲突、总线电容和驱动能力限制。</p>
         <aside className="article-callout"><strong>判断口诀：</strong>推挽输出不能线与（两个低阻电平对打会短路），开路输出才能线与；上拉电阻决定高电平速度与功耗。</aside>
       </section>
 

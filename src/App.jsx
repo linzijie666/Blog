@@ -19,9 +19,12 @@ import TextType from "./components/TextType";
 import ShinyText from "./components/ShinyText";
 import KnowledgeArticle from "./knowledge/KnowledgeArticle.jsx";
 import KnowledgeSection from "./knowledge/KnowledgeSection.jsx";
+import KnowledgeHub from "./knowledge/KnowledgeHub.jsx";
+import { isKnowledgeIndexRoute } from "./knowledge/route.js";
 import ReviewArticle from "./knowledge/ReviewArticle.jsx";
 import { resolveKnowledgeRoute, scrollToHomeAnchor } from "./knowledge/route.js";
 import "./knowledge/knowledge.css";
+import "./knowledge/hub.css";
 
 const email = "850207333@qq.com";
 
@@ -34,7 +37,7 @@ const navItems = [
   { label: "Experience", href: "#experience" },
   { label: "Projects", href: "#projects" },
   { label: "Capabilities", href: "#capabilities" },
-  { label: "Knowledge", href: "#knowledge" }
+  { label: "Knowledge", href: "#/knowledge" }
 ];
 
 const stats = [
@@ -382,6 +385,7 @@ function App() {
   }, [locationHash]);
 
   const knowledgeRoute = resolveKnowledgeRoute(locationHash);
+  if (isKnowledgeIndexRoute(locationHash)) return <KnowledgeHub />;
   if (knowledgeRoute === "capacitor-inductor") {
     return <KnowledgeArticle email={email} />;
   }

@@ -115,8 +115,8 @@ export default function DiodeArticle() {
             <Formula label="稳压管串联限流的基本关系" note="必须同时满足反向击穿工作、电流范围和功耗限制，不能把稳压管直接并到理想电源上。">
               I_Z ≈ (V_S - V_Z) / R_S - I_L
             </Formula>
-            <p>稳压管功耗为 <FormulaText text="P_Z = V_Z I_Z" />。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。例如 SOD-123 封装的 BZT52C2V0 稳压管，V_Z 为 2.0 V、I_ZT 为 5 mA、最大功耗 500 mW；用它产生 5.1 V 参考电压时，限流电阻上限由稳压电流决定、下限由功耗决定，只能得到几十毫安级的参考电流。</p>
-            <ArticleFigure src="images/knowledge/semiconductor-devices/diode-zener-reference.webp" fullSrc="images/knowledge/semiconductor-devices/diode-zener-reference-hd.jpg" alt="稳压二极管 BZT52C2V0 参数表与限流电阻计算" caption="稳压管参考源的关键是限流电阻：太小烧毁器件，太大稳压失效，只能提供参考电流。" sourcePage="9" />
+            <p>稳压管功耗为 <FormulaText text="P_Z = V_Z I_Z" />。设计时检查最小输入、最大输入、最小负载和最大负载四个边界，并留出安全余量。BZT52C2V0 的标称稳压值是 2.0V，只能在这种简单并联拓扑中得到约 2.0V；若目标是 5.1V，必须改用相应的 5.1V 稳压管并按其 IZT、动态电阻、容差和功耗重新计算限流电阻。</p>
+            <ArticleFigure src="images/knowledge/semiconductor-devices/diode-zener-reference.webp" fullSrc="images/knowledge/semiconductor-devices/diode-zener-reference-hd.jpg" alt="稳压二极管参数表与限流电阻计算" caption="图中的 BZT52C2V0 是 2.0V 型号；设计 5.1V 参考应选择 5.1V 稳压管，并按实际工作电流与功耗计算限流电阻。" sourcePage="9" />
           </section>
 
           <section id="circuits">
